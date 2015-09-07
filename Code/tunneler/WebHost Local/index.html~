@@ -5,8 +5,6 @@
     <title>Test Localhost</title>
 </head>
 <body>
-<h1>~WELCOME~</h1>
-<h1>######################################</h1>
-<h1>This HTML is running on localhost:9000</h1>
+<h1>Test localhost server listening:9000</h1>
 </body>
 </html>
