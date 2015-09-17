@@ -1,6 +1,7 @@
 __author__ = 'cruiz1391'
 import sys
 import socket
+import select
 from threading import Thread
 
 
@@ -13,36 +14,57 @@ __CLIENT = 1
 _TUNNELS_DIC = {}
 _SERVERS = []
 
-_REQUEST_CLIENT = "GET / HTTP/1.0%s"
+
+def client_tunnel_communication(client_connection):
+    # desired tunnel
+    request = client_connection.recv(1024)
+    if(len(request) == 0):
+        print('closing connection')
+        client_connection.close()
+        return
+    print request+"\n"
+    desired_tunnel_socket = _TUNNELS_DIC[request]
+    client_connection.sendall("connection established")
+
+    while True:
+        is_readable = [client_connection, desired_tunnel_socket]
+        is_writable = []
+        is_error = []
+        r, w, e = select.select(is_readable, is_writable, is_error, 1.0)
+        if r:
+            for sock in r:
+                if(sock == client_connection):
+                    client_message = client_connection.recv(1024)
+                    print('------------------------------------\n'
+                        'NEW client_connection message, Sent to tunnel: '
+                        '\n\n'
+                        +client_message+
+                        '-----------------------------------\n')
+                    desired_tunnel_socket.sendall(client_message)
+                else:
+                    tunnel_message = desired_tunnel_socket.recv(1024)
+                    if(len(tunnel_message)>0):
+                        print('------------------------------------\n'
+                            'NEW tunnel message, Sent to client: '
+                            '\n\n'
+                            +tunnel_message+
+                            '-----------------------------------\n')
+                        client_connection.sendall(tunnel_message)
+        # else:
+        #     print "waiting for data to read"
 
 ##################################################################################################
 
-def init_clients_sock(__HOST, __http_connection_port):
-    listen_http_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listen_http_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    listen_http_socket.bind((__HOST, __http_connection_port))
-    listen_http_socket.listen(5)
-    print 'listening %s ...' % __http_connection_port
+def init_clients_sock(__HOST, __client_connection_port):
+    listen_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listen_client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listen_client_socket.bind((__HOST, __client_connection_port))
+    listen_client_socket.listen(5)
+    print 'listening %s ...' % __client_connection_port
     while True:
-        client_connection, client_address = listen_http_socket.accept()
-        request = client_connection.recv(1000000)
-        if(len(request) == 0):
-            print('closing connection')
-            listen_http_socket.close()
-            return
-        print request+"\n"
-
-        client_connection.sendall("connection established")
-        next_request = client_connection.recv(1000000)
-        print(next_request+"\n")
-
-        socket_to_tunnel = _TUNNELS_DIC[request]
-        print('sending request to tunnel')
-        socket_to_tunnel.sendall(_REQUEST_CLIENT)
-        print('receiving back')
-        send_back = socket_to_tunnel.recv(1000000)
-        print(send_back)
-        client_connection.sendall(send_back)
+        client_connection, client_address = listen_client_socket.accept()
+        client_thread = Thread(target=client_tunnel_communication, args=[client_connection])
+        client_thread.start()
 
 
 ##################################################################################################
@@ -56,7 +78,7 @@ def init_tunnel_sock(__HOST, __tunnel_connection_port):
     print('listening %s ...' % __tunnel_connection_port)
     while True:
         client_connection, client_address = listen_tunnel_socket.accept()
-        request = client_connection.recv(1000000)
+        request = client_connection.recv(1024)
         _TUNNELS_DIC[request] = client_connection
         print request
         client_connection.sendall("Tunnel created!")
