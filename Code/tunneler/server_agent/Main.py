@@ -1,146 +1,187 @@
 __author__ = 'cruiz1391'
-import sys
+import sys, os
 import socket
 import select
+from Tunnel import *
 from threading import Thread
+from socket import error as SocketError
 
 
 __tunnel_connection_port = 8000
 __client_connection_port = 7000
 __HOST = 'localhost'
-_TUNNELS_DIC = {}
-_CLIENTS_DIC = {}
-_TUNNELS_ON_SELECT = []
 
 TUNNEl_CLIENT_ID_SIZE = 36
 DATA_SIZE_VALUE = 12
 PORT_SIZE_VALUE = 32
 
+TUNNELS_DIC = {}
+TUNNELS_ON_SELECT = []
 
 
-def client_tunnel_communication(client_connection, client_address):
-    is_readable = [client_connection]
+##################################################################################################
+def clientMessageHandler(client):
+    clientSocket = client.getConnection()
+    is_readable = [client.getConnection()]
     is_writable = []
     is_error = []
-    while True:
-        r, w, e = select.select(is_readable, is_writable, is_error, 1.0)
+    keepLoop = True
+    while keepLoop:
+        r, w, e = select.select(is_readable, is_writable, is_error)
         if r:
-            tunnel_dest_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
-            client_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
-            data_size = client_connection.recv(DATA_SIZE_VALUE)
-            client_message = client_connection.recv(int(data_size, 2))
+            print("New message from client!")
+            tunnel_dest_id = clientSocket.recv(TUNNEl_CLIENT_ID_SIZE)
+            if(len(tunnel_dest_id) == 0):
+                print("Connection closed by client!\nClosing connection...")
+                client.getConnection().close()
+                keepLoop = False
+            else:
+                client_id = clientSocket.recv(TUNNEl_CLIENT_ID_SIZE)
+                data_size = clientSocket.recv(DATA_SIZE_VALUE)
+                client_message = clientSocket.recv(int(data_size,2))
+                print('====================================================\n'
+                    'NEW MESSAGE FROM CLIENT: '
+                    '\ntunnel_dest_id: '+tunnel_dest_id+
+                    '\n     client_id: '+client_id+
+                    '\ndata_size: '+str(int(data_size, 2))+
+                    '\nclient_message: '+client_message+
+                    '\n====================================================\n')
 
-            print('\n------------------------------------\n'
-                'NEW MESSAGE FROM CLIENT: '
-                '\ntunnel_dest_id: '+tunnel_dest_id+
-                '\nclient_id: '+client_id+
-                '\ndata_size: '+str(int(data_size, 2))+
-                '\nclient_message: '+client_message+
-                '\n-----------------------------------\n')
-
-            _TUNNELS_DIC[tunnel_dest_id].sendall(client_id+bytes(data_size)+client_message)
+                TUNNELS_DIC[tunnel_dest_id].sendMessage(client_id+bytes(data_size)+client_message)
         # else:
         #     print "waiting for data to read"
 ##################################################################################################
-
-def tunnels_incomming_messages_handler():
+def tunnelMessageHandler():
     print("listening to tunnels on select......")
     while True:
         is_writable = []
         is_error = []
-        r, w, e = select.select(_TUNNELS_ON_SELECT, is_writable, is_error, 1.0)
+        r, w, e = select.select(TUNNELS_ON_SELECT, is_writable, is_error, 1.0)
         if r:
             for sock in r:
-                client_id = sock.recv(TUNNEl_CLIENT_ID_SIZE)
-                data_size = sock.recv(DATA_SIZE_VALUE)
-                tunnel_message = sock.recv(int(data_size,2))
-                print('\n------------------------------------\n'
-                    'destination client_id: '+client_id+
-                    '\nNEW tunnel message Sent to client: '+tunnel_message+
-                    '\n-----------------------------------\n')
-                if(len(tunnel_message) == 0):
-                    print('closing tunnel connection: ')
+                tunnelId = sock.recv(TUNNEl_CLIENT_ID_SIZE)
+                destClientId = sock.recv(TUNNEl_CLIENT_ID_SIZE)
+                if(len(destClientId) == 0):
+                    print('closing tunnel connection...')
+                    TUNNELS_ON_SELECT.remove(sock)
+                    if(tunnelId in TUNNELS_DIC):
+                        TUNNELS_DIC.pop(tunnelId)
                     sock.close()
-                    _TUNNELS_ON_SELECT.remove(sock)
-                    return
-                _CLIENTS_DIC[client_id].sendall(bytes(data_size) + tunnel_message)
+                else:
+                    msgSize = sock.recv(DATA_SIZE_VALUE)
+                    tunnel_message = ""
+                    if(len(msgSize) > 0):
+                        tunnel_message = sock.recv(int(msgSize,2))
+                        print('\n====================================================\n'
+                            'destination client_id: '+destClientId+
+                            '\nNEW tunnel message Sent to client: '+tunnel_message+
+                            '\n====================================================\n')
+                        tunnelObject = TUNNELS_DIC[tunnelId]
+                        tunnelObject.sendMessageToClient(destClientId, tunnel_message)
         # else:vevo 2015
         #     print "waiting for data to read"
-
-
 ##################################################################################################
-
-def client_tunnel_setup(client_connection, client_address):
-    # receive destination port from tunnel
-    dest_port = client_connection.recv(PORT_SIZE_VALUE)
+##createsnew client and send its id to the desired tunnel and the target port number
+def getClient(client_connection, client_address):
+    client_id = dest_tunnel_id = dest_port = ""
+    try:
+        # receive <DESTINATION PORT> <DESTINATION TUNNEL ID> <CLIENT ID>
+        dest_port = client_connection.recv(PORT_SIZE_VALUE)
+        dest_tunnel_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
+        client_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
+    except SocketError:
+        message = 'Client disconnected!'
+        errConnectionHandler(client_connection, message)
+    if(len(dest_port) == 0 or len(dest_port) == 0 or len(dest_port) == 0):
+        message = 'Client disconnected!'
+        errConnectionHandler(client_connection, message)
+    print("==========================================")
     print("dest_port", int(dest_port, 2))
-    #receive dest_tunnel_ID
-    dest_tunnel_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
     print("dest_tunnel_id", dest_tunnel_id)
-    #receive client ID
-    client_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
     print("client_id", client_id)
-    # size of data
-    data_size_to_read = client_connection.recv(DATA_SIZE_VALUE)
-    # receive initial data to be send to tunnel end point
-    initial_data = client_connection.recv(int(data_size_to_read, 2))
-    print("initial_data", initial_data)
-
-    _CLIENTS_DIC[client_id] = client_connection
-    if(dest_tunnel_id not in _TUNNELS_ON_SELECT):
-        _TUNNELS_ON_SELECT.append(_TUNNELS_DIC[dest_tunnel_id])
-
-    client_tunnel_handShake = client_id + bytes(dest_port) + bytes(data_size_to_read) + initial_data
-    desired_tunnel_socket = _TUNNELS_DIC[dest_tunnel_id]
-    desired_tunnel_socket.sendall(client_tunnel_handShake)
-
-
+    print("==========================================\n")
+    ## prepare message to send to tunnel
+    client_tunnel_handShake = client_id + bytes(dest_port)
+    ## if the TUNNEL EXIST then send message
+    ## ELSE
+    ## respond back to client
+    if(dest_tunnel_id in TUNNELS_DIC):
+        tunnel = TUNNELS_DIC[dest_tunnel_id]
+        tunnel.sendMessage(client_tunnel_handShake)
+        return Client(client_id, client_connection, client_address, tunnel)
+    else:
+        errResponse = "Tunnel id doesnt exist!\n"
+        client_connection.sendall(bytes(bin(len(errResponse))[2:].zfill(DATA_SIZE_VALUE))+errResponse)
+        return None
 ##################################################################################################
-
-def init_clients_sock(__HOST, __client_connection_port):
+def initClientConnections(__HOST, __client_connection_port):
     listen_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_client_socket.bind((__HOST, __client_connection_port))
     listen_client_socket.listen(5)
-    print 'listening %s ...' % __client_connection_port
+    print 'listening on port: %s ...' % __client_connection_port
     while True:
-        client_connection, client_address = listen_client_socket.accept()
-        client_tunnel_setup(client_connection, client_address)
-        client_thread = Thread(target=client_tunnel_communication, args=[client_connection, client_address])
-        client_thread.start()
-
-
+        try:
+            client_connection, client_address = listen_client_socket.accept()
+            print("\nNew Client Connection!")
+            newClient = getClient(client_connection, client_address)
+            if(newClient != None):
+                client_thread = Thread(target=clientMessageHandler, args=[newClient])
+                client_thread.daemon = True
+                client_thread.start()
+            else:
+                client_connection.close()
+        except KeyboardInterrupt:
+            print("\nServer disconnecting!\nClosing connections...")
+            os._exit(0)
 ##################################################################################################
-
-def init_tunnel_sock(__HOST, __tunnel_connection_port):
-    thread_running = False
+def initTunnelConnections(__HOST, __tunnel_connection_port):
     listen_tunnel_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_tunnel_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_tunnel_socket.bind((__HOST, __tunnel_connection_port))
     listen_tunnel_socket.listen(5)
-    print('listening %s ...' % __tunnel_connection_port)
+    print('listening on port: %s ...' % __tunnel_connection_port)
     while True:
-        tunnel_connection, tunnel_address = listen_tunnel_socket.accept()
+        try:
+            tunnel_connection, tunnel_address = listen_tunnel_socket.accept()
+        except KeyboardInterrupt:
+            message = "\nServer disconnecting!\nClosing connections..."
+            errConnectionHandler(listen_tunnel_socket, message)
+            sys.exit(0)
         # receiving tunnel uuid
         tunnel_id = tunnel_connection.recv(TUNNEl_CLIENT_ID_SIZE)
-        _TUNNELS_DIC[tunnel_id] = tunnel_connection
-        print ('\n------------------------------------\n'
+        ## Create new tunnel
+        newTunnel = Tunnel(tunnel_id, tunnel_connection)
+
+        #add tunnel to list of tunnles to listen tunnels_on_select
+        if(tunnel_id in TUNNELS_DIC):
+            del TUNNELS_DIC[tunnel_id]
+        TUNNELS_DIC[tunnel_id] = newTunnel
+        if(newTunnel.getTunnelConnection() in TUNNELS_ON_SELECT):
+            TUNNELS_ON_SELECT.remove(newTunnel.getTunnelConnection())
+        TUNNELS_ON_SELECT.append(newTunnel.getTunnelConnection())
+
+        print ('\n====================================================\n'
                "New tunnel connection established!"
                "\ntunnelID: "+ tunnel_id + ""
-               '\n------------------------------------\n')
-        tunnel_connection.sendall(tunnel_id)
-
-
+               "\nTunnelObject: %08x" % id(newTunnel)+
+               '\n====================================================\n')
 ##################################################################################################
-
+def errConnectionHandler(socket, message):
+    socket.close()
+    print('\n====================================================\n'
+            +message+
+            '\n====================================================\n')
+##################################################################################################
 if __name__ == '__main__':
-    print('Server Starting')
+    print('SERVER STARTING!!!')
     # listen to tunnels incoming DATA
-    tunnels_on_select = Thread(target=tunnels_incomming_messages_handler)
+    tunnels_on_select = Thread(target=tunnelMessageHandler)
+    tunnels_on_select.daemon = True
     tunnels_on_select.start()
     # starting socket to listen for incoming connections from tunnels
-    tunnelThread = Thread(target=init_tunnel_sock, args=[__HOST, __tunnel_connection_port])
+    tunnelThread = Thread(target=initTunnelConnections, args=[__HOST, __tunnel_connection_port])
+    tunnelThread.daemon = True
     tunnelThread.start()
     # listen for incoming client connections
-    init_clients_sock(__HOST, __client_connection_port)
-
+    initClientConnections(__HOST, __client_connection_port)
