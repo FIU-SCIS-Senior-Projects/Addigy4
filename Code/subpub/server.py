@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 import pika
 import os
-__author__ = 'David'
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(
-          host='localhost'))
+__author__ = 'David'
 
 channel = connection.channel()
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html><head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script src="../javascript/pubsub.js"></script>
+</head><body lang="en">
+    <div id="first" class="box">
+      <h2>Received</h2>
+      <div></div>
+      <form><input autocomplete="off" value="Type here..."></input></form>
+    </div>
+
+    <div id="second" class="box">
+      <h2>Logs</h2>
+      <div></div>
+    </div>
+
+    <script>
+        var has_had_focus = false;
+        var pipe = function(el_name, send) {
+            var div  = $(el_name + ' div');
+            var inp  = $(el_name + ' input');
+            var form = $(el_name + ' form');
+
+            var print = function(m, p) {
+                p = (p === undefined) ? '' : JSON.stringify(p);
+                div.append($("<code>").text(m + ' ' + p));
+                div.scrollTop(div.scrollTop() + 10000);
+            };
+
+            if (send) {
+                form.submit(function() {
+                    send(inp.val());
+                    inp.val('');
+                    return false;
+                });
+            }
+            return print;
+        };
+
+      var PUBSUB = pubsub.init({
+		location: 'http://' + window.location.hostname + ':15674/stomp'
+	  });
+      var print_first = pipe('#test', function(data) {
+          client.send('/topic/test', {"content-type":"text/plain"}, data);
+      });
+      var on_connect = function(x) {
+          id = client.subscribe("/topic/test", function(d) {
+               print_first(d.body);
+          });
+      };
+      var on_error =  function() {
+        console.log('error');
+      };
+	  
+	  pubsub.connect();
+	  
+	  PUBSUB.alert();
+	  
+      $('#first input').focus(function() {
+          if (!has_had_focus) {
+              has_had_focus = true;
+              $(this).val("");
+          }
+      });
+    </script>
+</body></html>
