@@ -8,12 +8,13 @@ channel = connection.channel()
 
 channel.queue_declare(queue='rpc_queue')
 
-
+# REMOVE, making an SDK
 def proof_of_concept(arg):
+    os.system("open -a Terminal \"`pwd`\"")
     # os.system("gnome-terminal -e 'bash -c \"echo %s; exec bash\"'" % arg)
-    os.system("start cmd /k echo %s" % arg)
+    # os.system("start cmd /k echo %s" % arg)
     return arg
-
+    
 
 def on_request(ch, method, props, body):
     n = str(body)

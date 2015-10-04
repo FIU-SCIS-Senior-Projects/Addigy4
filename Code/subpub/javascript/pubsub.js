@@ -1,8 +1,8 @@
 window.pubsub = (function () {
     function PubSub() {
-	
+
 	}
-     
+
     var pubsub = {
 		'init' : function(args) {
 			this.location = args['location'];
@@ -13,23 +13,23 @@ window.pubsub = (function () {
 			client.heartbeat.outgoing = 0;
 			client.heartbeat.incoming = 0;
 		},
-		'send' : function(data) {
-			client.send('/topic/test', {"content-type":"text/plain"}, data);
+		'send' : function(channel, data) {
+			client.send(channel, {"content-type":"text/plain"}, data);
 		},
-		
-		'subscribe' : function(dst, action) {
-			client.subscribe("/topic/test", action());
+
+		'subscribe' : function(channel, action) {
+			client.subscribe("/topic/test", action);
 		},
-		
+
 		'connect' : function(fun1, fun2) {
-			client.connect('guest', 'guest', fun1(), fun2(), '/');
+			client.connect('guest', 'guest', fun1, fun2, '/');
 		},
-		
+
 		'alert' : function () {
 			alert(this.location);
 		}
     };
-     
+
     return pubsub;
 }());
 
@@ -1371,7 +1371,7 @@ var SockJS = function(url, dep_protocols_whitelist, options) {
         // makes `new` optional
         return new SockJS(url, dep_protocols_whitelist, options);
     }
-    
+
     var that = this, protocols_whitelist;
     that._options = {devel: false, debug: false, protocols_whitelist: [],
                      info: undefined, rtt: undefined};
@@ -2809,4 +2809,3 @@ if (typeof define === 'function' && define.amd) {
 //     [*] End of lib/index.js
 
 // [*] End of lib/all.js
-
