@@ -8,6 +8,7 @@ channel = connection.channel()
 
 channel.queue_declare(queue='rpc_queue')
 
+
 # REMOVE, making an SDK
 def proof_of_concept(arg):
     os.system("open -a Terminal \"`pwd`\"")
