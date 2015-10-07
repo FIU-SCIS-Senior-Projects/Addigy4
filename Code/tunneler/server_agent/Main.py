@@ -177,7 +177,7 @@ def readData(socket, dataSize):
     buf = b''
     while dataSize:
         newbuf = socket.recv(dataSize)
-        if not newbuf: return None
+        if not newbuf: return ""
         buf += newbuf
         dataSize -= len(newbuf)
     return buf

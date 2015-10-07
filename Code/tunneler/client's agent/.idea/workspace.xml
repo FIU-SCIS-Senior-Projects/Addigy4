@@ -14,7 +14,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/client's agent$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1444188553362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/client's agent$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1444189166801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Main.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="126" column="4" selection-start-line="126" selection-start-column="4" selection-end-line="132" selection-end-column="14" />
+            <state vertical-scroll-proportion="1.5677966">
+              <caret line="110" column="25" selection-start-line="110" selection-start-column="19" selection-end-line="110" selection-end-column="25" />
               <folding>
                 <element signature="e#25#36#0" expanded="true" />
               </folding>
@@ -49,10 +49,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServerObject.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ServerObject.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ServerObject.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.21610169">
+            <state vertical-scroll-proportion="0.0">
               <caret line="15" column="36" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="36" />
               <folding>
                 <element signature="e#26#42#0" expanded="true" />
@@ -74,8 +74,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Client.py" />
-        <option value="$PROJECT_DIR$/Main.py" />
         <option value="$PROJECT_DIR$/ServerObject.py" />
+        <option value="$PROJECT_DIR$/Main.py" />
       </list>
     </option>
   </component>
@@ -351,7 +351,7 @@
       <module name="client's agent" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
-      <option name="PARAMETERS" value="fc86c7ef-f579-4115-8137-289b8a257803 3000 22" />
+      <option name="PARAMETERS" value="fc86c7ef-f579-4115-8137-289b8a257803 3000 4500" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -675,6 +675,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/lib/python2.7/socket.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3326087">
+          <caret line="227" column="0" selection-start-line="227" selection-start-column="0" selection-end-line="227" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ServerObject.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="36" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="36" />
+          <folding>
+            <element signature="e#26#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Client.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -685,30 +703,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/lib/python2.7/socket.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3326087">
-          <caret line="227" column="0" selection-start-line="227" selection-start-column="0" selection-end-line="227" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="126" column="4" selection-start-line="126" selection-start-column="4" selection-end-line="132" selection-end-column="14" />
+        <state vertical-scroll-proportion="1.5677966">
+          <caret line="110" column="25" selection-start-line="110" selection-start-column="19" selection-end-line="110" selection-end-column="25" />
           <folding>
             <element signature="e#25#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ServerObject.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21610169">
-          <caret line="15" column="36" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="36" />
-          <folding>
-            <element signature="e#26#42#0" expanded="true" />
           </folding>
         </state>
       </provider>
