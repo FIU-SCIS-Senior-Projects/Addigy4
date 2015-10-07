@@ -30,15 +30,15 @@ def clientMessageHandler(client):
         r, w, e = select.select(is_readable, is_writable, is_error)
         if r:
             print("New message from client!")
-            tunnel_dest_id = clientSocket.recv(TUNNEl_CLIENT_ID_SIZE)
+            tunnel_dest_id = readData(clientSocket, TUNNEl_CLIENT_ID_SIZE)
             if(len(tunnel_dest_id) == 0):
-                print("Connection closed by client!\nClosing connection...")
+                sys.stderr.write("Connection closed by client!\nClosing connection...")
                 client.getConnection().close()
                 keepLoop = False
             else:
-                client_id = clientSocket.recv(TUNNEl_CLIENT_ID_SIZE)
-                data_size = clientSocket.recv(DATA_SIZE_VALUE)
-                client_message = clientSocket.recv(int(data_size,2))
+                client_id = readData(clientSocket, TUNNEl_CLIENT_ID_SIZE)
+                data_size = readData(clientSocket, DATA_SIZE_VALUE)
+                client_message = readData(clientSocket, int(data_size,2))
                 print('====================================================\n'
                     'NEW MESSAGE FROM CLIENT: '
                     '\ntunnel_dest_id: '+tunnel_dest_id+
@@ -59,8 +59,8 @@ def tunnelMessageHandler():
         r, w, e = select.select(TUNNELS_ON_SELECT, is_writable, is_error, 1.0)
         if r:
             for sock in r:
-                tunnelId = sock.recv(TUNNEl_CLIENT_ID_SIZE)
-                destClientId = sock.recv(TUNNEl_CLIENT_ID_SIZE)
+                tunnelId = readData(sock, TUNNEl_CLIENT_ID_SIZE)
+                destClientId = readData(sock, TUNNEl_CLIENT_ID_SIZE)
                 if(len(destClientId) == 0):
                     print('closing tunnel connection...')
                     TUNNELS_ON_SELECT.remove(sock)
@@ -68,10 +68,10 @@ def tunnelMessageHandler():
                         TUNNELS_DIC.pop(tunnelId)
                     sock.close()
                 else:
-                    msgSize = sock.recv(DATA_SIZE_VALUE)
+                    msgSize = readData(sock, DATA_SIZE_VALUE)
                     tunnel_message = ""
                     if(len(msgSize) > 0):
-                        tunnel_message = sock.recv(int(msgSize,2))
+                        tunnel_message =readData(sock, int(msgSize,2))
                         print('\n====================================================\n'
                             'destination client_id: '+destClientId+
                             '\nNEW tunnel message Sent to client: '+tunnel_message+
@@ -149,7 +149,7 @@ def initTunnelConnections(__HOST, __tunnel_connection_port):
             errConnectionHandler(listen_tunnel_socket, message)
             sys.exit(0)
         # receiving tunnel uuid
-        tunnel_id = tunnel_connection.recv(TUNNEl_CLIENT_ID_SIZE)
+        tunnel_id = readData(tunnel_connection, TUNNEl_CLIENT_ID_SIZE)
         ## Create new tunnel
         newTunnel = Tunnel(tunnel_id, tunnel_connection)
 
@@ -169,9 +169,21 @@ def initTunnelConnections(__HOST, __tunnel_connection_port):
 ##################################################################################################
 def errConnectionHandler(socket, message):
     socket.close()
-    print('\n====================================================\n'
-            +message+
-            '\n====================================================\n')
+    sys.stderr.write('\n====================================================\n'
+                +message+
+                '\n====================================================\n')
+###########################################################################################################
+def readData(socket, dataSize):
+    dataToReturn = ""
+    dataRead = ""
+    dataReadLength = 0
+    while (dataReadLength != dataSize):
+        dataRead=socket.recv(dataSize-dataReadLength)
+        dataReadLength += len(dataRead)
+        if(len(dataRead)==0):
+            return ""
+        dataToReturn += dataRead
+    return dataRead
 ##################################################################################################
 if __name__ == '__main__':
     print('SERVER STARTING!!!')

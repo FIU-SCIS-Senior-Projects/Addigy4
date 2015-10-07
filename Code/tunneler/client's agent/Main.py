@@ -13,7 +13,12 @@ BUFFER_SIZE = 2048
 
 LOCALHOST = 'localhost'
 #####################################################################################################
-def ClientServerCommunication(client):
+def ClientServerCommunication(client, destPort):
+    message = bytes(bin(destPort)[2:].zfill(PORT_SIZE_VALUE))\
+            + client.getDestTunnelId()\
+            + client.getId().__str__()
+    client.sendInitialMessage(message)
+
     myClient = client
     clientSocket = myClient.getConnection()
     serverSocket = myClient.getServerObject().getSocket()
@@ -26,17 +31,17 @@ def ClientServerCommunication(client):
             for sock in r:
                 if(sock == serverSocket):
                     try:
-                        serverMsgSize = serverSocket.recv(DATA_SIZE_VALUE)
+                        serverMsgSize = readData(serverSocket, DATA_SIZE_VALUE)
                         if(len(serverMsgSize)==0):
                             message = 'Communication closed by program!\nClosing connections...'
-                            errorConnectionHanlder(client, True, message)
+                            errorConnectionHanlder(client, message)
                             return
                     except SocketError:
                         message = 'Communication closed by program!\nClosing connections...'
-                        errorConnectionHanlder(client, True, message)
+                        errorConnectionHanlder(client, message)
                         return
 
-                    serverMsg = serverSocket.recv(int(serverMsgSize, 2))
+                    serverMsg = readData(serverSocket, int(serverMsgSize, 2))
                     print('\n====================================================\n'
                         'Message from server: '+serverMsg+
                         '\n====================================================\n')
@@ -47,11 +52,11 @@ def ClientServerCommunication(client):
                         clientMsgSize = len(clientMessage)
                         if(clientMsgSize == 0):
                             message = 'Communication closed by program!\nClosing connections...'
-                            errorConnectionHanlder(client, False,message)
+                            errorConnectionHanlder(client,message)
                             return
                     except SocketError:
                         message = 'Communication closed by program!\nClosing connections...'
-                        errorConnectionHanlder(client, False, message)
+                        errorConnectionHanlder(client, message)
                         return
 
                     data_to_server = myClient.getDestTunnelId().encode() \
@@ -90,19 +95,13 @@ def handleNewClientConnections(localPort, tunnelID, destPort):
         ## if connected to server return TRUE else FALSE
         if(newClient.connectToServer()):
             print("\nConnection established!")
-            message = bytes(bin(destPort)[2:].zfill(PORT_SIZE_VALUE))\
-                    + tunnelID\
-                    + newClient.getId().__str__()
-            newClient.setDestTunnelId(tunnelID)
-            newClient.sendInitialMessage(message)
-
             ## new thread to handle communication
             ## client object and server object
-            serverMsgHanlderThread = Thread(target=ClientServerCommunication, args=[newClient])
+            newClient.setDestTunnelId(tunnelID)
+            serverMsgHanlderThread = Thread(target=ClientServerCommunication, args=[newClient, destPort])
             serverMsgHanlderThread.daemon = True
             serverMsgHanlderThread.start()
         else:
-            newClient.getConnection().sendall("Error: Couldn't connect to server!\n")
             newClient.getConnection().close()
 ###########################################################################################################
 def setupClient(params):
@@ -118,14 +117,23 @@ def setupClient(params):
     handleNewClientConnections(localPort, tunnelID, destPort)
 
 ###########################################################################################################
-def errorConnectionHanlder(clientSocket, isServerErr, message):
-    print(message)
-    if isServerErr:
-        clientSocket.getConnection().sendall("Error: Couldn't connect to server!\n")
+def errorConnectionHanlder(clientSocket, message):
+    sys.stderr.write(message)
     clientSocket.getConnection().close()
     clientSocket.getServerObject().getSocket().close()
-    clientSocket.__del__()
     return True
+###########################################################################################################
+def readData(socket, dataSize):
+    dataToReturn = ""
+    dataRead = ""
+    dataReadLength = 0
+    while (dataReadLength != dataSize):
+        dataRead=socket.recv(dataSize-dataReadLength)
+        dataReadLength += len(dataRead)
+        if(len(dataRead)==0):
+            return ""
+        dataToReturn += dataRead
+    return dataRead
 ###########################################################################################################
 if __name__ == '__main__':
     if(len(sys.argv) != 4):

@@ -31,6 +31,3 @@ class Client():
 
     def sendMessage(self, message):
         self.__socket.sendall(bytes(bin(len(message))[2:].zfill(self.DATA_SIZE_VALUE))+message)
-
-    def __del__(self):
-        print ("__del__() called: client object %08x destroyed" % id(self))

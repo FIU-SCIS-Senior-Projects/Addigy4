@@ -27,6 +27,3 @@ class Tunnel():
 
     def sendMessageToClient(self, clientId, message):
         self.__activeClients.get(clientId).sendMessage(message)
-
-    def __del__(self):
-        print ("__del__() called: server object %08x destroyed" % id(self))

@@ -30,6 +30,3 @@ class Server():
 
     def getSocket(self):
         return self.__socket
-
-    def __del__(self):
-        print ("__del__() called: server object %08x destroyed" % id(self))

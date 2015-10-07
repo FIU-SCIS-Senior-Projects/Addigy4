@@ -12,7 +12,7 @@ PORT_SIZE_VALUE = 32
 BUFFER_SIZE = 2048
 
 HARDCODE_MYCODE = 'fc86c7ef-f579-4115-8137-289b8a257803'
-_ACTIVE_SERVER_CLIENTS = {}
+ACTIVE_SERVER_CLIENTS = {}
 
 #####################################################################################################
 def addNewClientAndOpenConnection(client_ID, portNumber):
@@ -30,7 +30,7 @@ def establishClientTunnelConnection(clientId, destPort):
         newClient = Client(clientId, newProgram)
         return newClient
     else:
-        print("\nCouldn't connect to local port at: " + str(int(destPort, 2)))
+        sys.stderr.write("\nCouldn't connect to local port at: " + str(int(destPort, 2)))
         return None
 
 #####################################################################################################
@@ -53,10 +53,10 @@ def serverMessageHandler(serverObject):
                 if(sock == serverSocket):
                     client_ID = serverSocket.recv(TUNNEl_CLIENT_ID_SIZE)
                     ##if client does not exist
-                    if(client_ID not in _ACTIVE_SERVER_CLIENTS):
-                        dest_port = serverSocket.recv(PORT_SIZE_VALUE)
+                    if(client_ID not in ACTIVE_SERVER_CLIENTS):
+                        dest_port = readData(serverSocket, PORT_SIZE_VALUE)
                         if(len(client_ID) == 0 or len(dest_port) == 0):
-                            print("Server closed connection...")
+                            sys.stderr.write("Server closed connection...")
                             os._exit(0)
                         else:
                             print('\n====================================================\n'
@@ -65,38 +65,39 @@ def serverMessageHandler(serverObject):
                                     "\nlocal destination port: "+str(int(dest_port,2))
                                     +'\n====================================================')
                             newServerClient = establishClientTunnelConnection(client_ID, dest_port)
-                            _ACTIVE_SERVER_CLIENTS[client_ID] = newServerClient
+                            ACTIVE_SERVER_CLIENTS[client_ID] = newServerClient
                             if(newServerClient == None):
-                                print("\nClosing connection..")
+                                sys.stderr.write("\nClosing connection..")
                             else:
                                 programSocket = newServerClient.getProgram().getSocket()
                                 is_readable.append(programSocket)
                                 serverClientsObjects[programSocket] = newServerClient
                     else:
                         ##If the client already exist
-                        data_size = serverSocket.recv(DATA_SIZE_VALUE)
-                        serverMsg = serverSocket.recv(int(data_size, 2))
+                        data_size = readData(serverSocket, DATA_SIZE_VALUE)
+                        serverMsg = readData(serverSocket, int(data_size, 2))
+                        if(len(data_size) == 0 or len(serverMsg) == 0):
+                            sys.stderr.write("Server closed connection...")
+                            os._exit(0)
                         print('\n====================================================\n'
                                 "Received message from server"
                                 "\nclient id: " + client_ID +
-                                "\nto program: %08x" % id(_ACTIVE_SERVER_CLIENTS[client_ID].getProgram()) +
+                                "\nto program: %08x" % id(ACTIVE_SERVER_CLIENTS[client_ID].getProgram()) +
                                 "\nmessage: "+ str(serverMsg)
                                 +'\n====================================================\n')
-                        _ACTIVE_SERVER_CLIENTS[client_ID].getProgram().getSocket().sendall(serverMsg)
+                        ACTIVE_SERVER_CLIENTS[client_ID].getProgram().getSocket().sendall(serverMsg)
                 else:
                     serverClient = serverClientsObjects[sock]
                     try:
                         programMsg = sock.recv(BUFFER_SIZE)
                     except SocketError:
                         errMsg = 'Program terminated connection!'
-                        errConnectionHandler(None, errMsg)
+                        sys.stderr.write(errMsg)
                     programMsgSize = len(programMsg)
                     if(programMsgSize == 0):
-                        print("Connection closed by program!")
+                        sys.stderr.write("Connection closed by program!")
                         is_readable.remove(sock)
                         serverClient.getProgram().getSocket().close()
-                        serverClient.getProgram().__del__()
-                        serverClient.__del__()
                         break
                     msgToSend = HARDCODE_MYCODE\
                                 + serverClient.getId().encode() \
@@ -112,16 +113,16 @@ def serverMessageHandler(serverObject):
 #####################################################################################################
 def fatalErrConnectionHandler(serverSocket, message):
     serverSocket.sendall(HARDCODE_MYCODE)
-    print('\n====================================================\n'
-            +message+
-            '\n====================================================\n')
+    sys.stderr.write('\n====================================================\n'
+                    +message+
+                    '\n====================================================\n')
 #####################################################################################################
 def errConnectionHandler(serverSocket, message):
     if(serverSocket != None):
         serverSocket.sendall(HARDCODE_MYCODE)
-    print('\n====================================================\n'
-            +message+
-            '\n====================================================\n')
+    sys.stderr.write('\n====================================================\n'
+                    +message+
+                    '\n====================================================\n')
 #####################################################################################################
 def startTunnelConnection(serverObject):
     # creste server object
@@ -134,7 +135,18 @@ def startTunnelConnection(serverObject):
         serverMessageHandler(serverObject)
     else:
         os._exit(0)
-
+###########################################################################################################
+def readData(socket, dataSize):
+    dataToReturn = ""
+    dataRead = ""
+    dataReadLength = 0
+    while (dataReadLength != dataSize):
+        dataRead=socket.recv(dataSize-dataReadLength)
+        dataReadLength += len(dataRead)
+        if(len(dataRead)==0):
+            return ""
+        dataToReturn += dataRead
+    return dataRead
 #####################################################################################################
 if __name__ == '__main__':
     serverObject = Server()

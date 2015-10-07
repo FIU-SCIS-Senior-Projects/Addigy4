@@ -14,6 +14,3 @@ class Client():
 
     def getId(self):
         return self.__id
-
-    def __del__(self):
-        print ("__del__() called: serverClient object %08x destroyed" % id(self))

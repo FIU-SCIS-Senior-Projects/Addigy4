@@ -1,12 +1,14 @@
 __author__ = 'cruiz1391'
 
+import traceback
 import socket
+import sys
 from Client import *
 
 class Server():
     __socket = None
     __serverPort = 0
-    __url = ""
+    __url = "fiu.addigy.com"
 
 
     def __init__(self):
@@ -18,7 +20,9 @@ class Server():
         try:
             self.__socket.connect((self.__url, self.__serverPort))
         except Exception as msg:
-            print("\nCouldn't connect to server...\nPlease try again!")
+            tb = traceback.format_exc()
+            sys.stderr.write(tb)
+            sys.stderr.write("\nCouldn't connect to server...\nPlease try again!")
             self.__socket.close()
             return False
         return True
@@ -40,6 +44,3 @@ class Server():
                 'SENT: '+ message+
             '\n====================================================\n')
         self.getSocket().sendall(message)
-
-    def __del__(self):
-        print ("__del__() called: server object %08x destroyed" % id(self))
