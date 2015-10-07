@@ -137,16 +137,13 @@ def startTunnelConnection(serverObject):
         os._exit(0)
 ###########################################################################################################
 def readData(socket, dataSize):
-    dataToReturn = ""
-    dataRead = ""
-    dataReadLength = 0
-    while (dataReadLength != dataSize):
-        dataRead=socket.recv(dataSize-dataReadLength)
-        dataReadLength += len(dataRead)
-        if(len(dataRead)==0):
-            return ""
-        dataToReturn += dataRead
-    return dataRead
+    buf = b''
+    while dataSize:
+        newbuf = socket.recv(dataSize)
+        if not newbuf: return None
+        buf += newbuf
+        dataSize -= len(newbuf)
+    return buf
 #####################################################################################################
 if __name__ == '__main__':
     serverObject = Server()

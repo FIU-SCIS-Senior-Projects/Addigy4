@@ -9,7 +9,7 @@ class Server():
 
     def __init__(self):
         self.__serverPort = 8000
-        self.__url = 'localhost'
+        self.__url = 'fiu.addigy.com'
         return
 
     def connect(self):
