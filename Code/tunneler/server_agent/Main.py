@@ -86,9 +86,9 @@ def getClient(client_connection, client_address):
     client_id = dest_tunnel_id = dest_port = ""
     try:
         # receive <DESTINATION PORT> <DESTINATION TUNNEL ID> <CLIENT ID>
-        dest_port = client_connection.recv(PORT_SIZE_VALUE)
-        dest_tunnel_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
-        client_id = client_connection.recv(TUNNEl_CLIENT_ID_SIZE)
+        dest_port = readData(client_connection, PORT_SIZE_VALUE)
+        dest_tunnel_id = readData(client_connection, TUNNEl_CLIENT_ID_SIZE)
+        client_id = readData(client_connection, TUNNEl_CLIENT_ID_SIZE)
     except SocketError:
         message = 'Client disconnected!'
         errConnectionHandler(client_connection, message)
@@ -177,9 +177,10 @@ def readData(socket, dataSize):
     dataToReturn = ""
     dataRead = ""
     dataReadLength = 0
-    while (dataReadLength != dataSize):
+    while (dataReadLength < dataSize):
         dataRead=socket.recv(dataSize-dataReadLength)
         dataReadLength += len(dataRead)
+        print(str(dataReadLength)+"\n")
         if(len(dataRead)==0):
             return ""
         dataToReturn += dataRead
