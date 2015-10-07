@@ -51,7 +51,7 @@ def serverMessageHandler(serverObject):
         if r:
             for sock in r:
                 if(sock == serverSocket):
-                    client_ID = serverSocket.recv(TUNNEl_CLIENT_ID_SIZE)
+                    client_ID = readData(serverSocket, TUNNEl_CLIENT_ID_SIZE)
                     ##if client does not exist
                     if(client_ID not in ACTIVE_SERVER_CLIENTS):
                         dest_port = readData(serverSocket, PORT_SIZE_VALUE)
