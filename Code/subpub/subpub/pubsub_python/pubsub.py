@@ -35,7 +35,7 @@ class PubSub(object):
         channel.basic_publish(exchange=exchange, routing_key=routing_key, body=body, properties=properties,
                               mandatory=mandatory, immediate=immediate)
 
-    def consume(self, callback, queue_name, no_ack=False, exclusive=False, consumer_tag=None, arguments=None):
+    def subscribe(self, callback, queue_name, no_ack=False, exclusive=False, consumer_tag=None, arguments=None):
         channel.basic_consume(callback, queue=queue_name, no_ack=no_ack, exclusive=exclusive, consumer_tag=consumer_tag,
                               arguments=arguments)
 

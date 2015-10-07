@@ -7,22 +7,24 @@ window.pubsub = (function () {
 		'init' : function(args) {
 			this.location = args['location'];
 			this.ws = new SockJS(this.location);
+      this.heartbeats_outcoming = args['heartbeats_outcoming'];
+      this.heartbeats_incoming = args['heartbeats_incoming'];
+
 			client = Stomp.over(this.ws);
 			console.log(this.location);
-			// SockJS does not support heart-beat: disable heart-beats
 			client.heartbeat.outgoing = 0;
 			client.heartbeat.incoming = 0;
 		},
-		'send' : function(channel, data) {
-			client.send(channel, {"content-type":"text/plain"}, data);
+		'send' : function(channel, args, data) {
+			client.send(channel, args, data);
 		},
 
 		'subscribe' : function(channel, action) {
 			client.subscribe("/topic/test", action);
 		},
 
-		'connect' : function(fun1, fun2) {
-			client.connect('guest', 'guest', fun1, fun2, '/');
+		'connect' : function(login, password, fun1, fun2, host) {
+			client.connect(login, password, fun1, fun2, host);
 		},
 
 		'alert' : function () {
