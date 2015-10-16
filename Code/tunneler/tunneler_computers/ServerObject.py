@@ -4,12 +4,12 @@ import socket
 
 class Server():
     __serverPort = 0
-    __url = ""
+    __url = "fiu.addigy.com"
     __socket = None
 
     def __init__(self):
         self.__serverPort = 8000
-        self.__url = 'fiu.addigy.com'
+        self.__url = 'localhost'
         return
 
     def connect(self):

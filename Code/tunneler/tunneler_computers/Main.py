@@ -11,7 +11,7 @@ DATA_SIZE_VALUE = 12
 PORT_SIZE_VALUE = 32
 BUFFER_SIZE = 2048
 
-HARDCODE_MYCODE = 'fc86c7ef-f579-4115-8137-289b8a257803'
+# HARDCODE_MYCODE = 'fc86c7ef-f579-4115-8137-289b8a257803'
 ACTIVE_SERVER_CLIENTS = {}
 
 #####################################################################################################
@@ -99,7 +99,7 @@ def serverMessageHandler(serverObject):
                         is_readable.remove(sock)
                         serverClient.getProgram().getSocket().close()
                         break
-                    msgToSend = HARDCODE_MYCODE\
+                    msgToSend = myId\
                                 + serverClient.getId().encode() \
                                 + bytes(bin(programMsgSize)[2:].zfill(DATA_SIZE_VALUE)) \
                                 + programMsg
@@ -112,14 +112,14 @@ def serverMessageHandler(serverObject):
                     serverSocket.sendall(msgToSend)
 #####################################################################################################
 def fatalErrConnectionHandler(serverSocket, message):
-    serverSocket.sendall(HARDCODE_MYCODE)
+    serverSocket.sendall(myId)
     sys.stderr.write('\n====================================================\n'
                     +message+
                     '\n====================================================\n')
 #####################################################################################################
 def errConnectionHandler(serverSocket, message):
     if(serverSocket != None):
-        serverSocket.sendall(HARDCODE_MYCODE)
+        serverSocket.sendall(myId)
     sys.stderr.write('\n====================================================\n'
                     +message+
                     '\n====================================================\n')
@@ -127,10 +127,10 @@ def errConnectionHandler(serverSocket, message):
 def startTunnelConnection(serverObject):
     # creste server object
     if(serverObject.connect()):
-        serverObject.sendInitialMessage(HARDCODE_MYCODE)
+        serverObject.sendInitialMessage(myId)
         print('\n====================================================\n'
                 "Tunnel created!"
-                "\nTunnel id: " + HARDCODE_MYCODE
+                "\nTunnel id: " + myId
                 +'\n====================================================\n')
         serverMessageHandler(serverObject)
     else:
@@ -146,5 +146,10 @@ def readData(socket, dataSize):
     return buf
 #####################################################################################################
 if __name__ == '__main__':
+    if(len(sys.argv) != 2):
+        print("\nIncorrect number of params <tunnel id>")
+        sys.exit(0)
+    global myId
+    myId = sys.argv[1]
     serverObject = Server()
     startTunnelConnection(serverObject)
