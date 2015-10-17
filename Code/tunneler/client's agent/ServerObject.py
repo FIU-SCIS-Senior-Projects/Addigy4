@@ -37,10 +37,10 @@ class Server():
         return self.__socket
 
     def sendMessage(self, message):
-        print('Initial message sent to server <destination port> <destination tunnel id> <client id>'
-            '\n====================================================\n'
-                'SERVER OBJECT: %08x ' % id(self.__talkingToClient) +
-                'SENT: <destination port> <destination tunnel id> <client id>\n'
-                'SENT: '+ message+
-            '\n====================================================\n')
+        # print('Initial message sent to server <destination port> <destination tunnel id> <client id>'
+        #     '\n====================================================\n'
+        #         'SERVER OBJECT: %08x ' % id(self.__talkingToClient) +
+        #         'SENT: <destination port> <destination tunnel id> <client id>\n'
+        #         'SENT: '+ message+
+        #     '\n====================================================\n')
         self.getSocket().sendall(message)

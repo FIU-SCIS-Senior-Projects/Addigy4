@@ -42,9 +42,9 @@ def ClientServerCommunication(client, destPort):
                         return
 
                     serverMsg = readData(serverSocket, int(serverMsgSize, 2))
-                    print('\n====================================================\n'
-                        'Message from server: '+serverMsg+
-                        '\n====================================================\n')
+                    # print('\n====================================================\n'
+                    #     'Message from server: '+serverMsg+
+                    #     '\n====================================================\n')
                     clientSocket.sendall(serverMsg)
                 else:
                     try:
@@ -63,19 +63,19 @@ def ClientServerCommunication(client, destPort):
                                     + myClient.getId().__str__().encode() \
                                     + bytes(bin(clientMsgSize)[2:].zfill(DATA_SIZE_VALUE)) \
                                     + clientMessage
-                    print('====================================================\n'
-                        'NEW MESSAGE SENT TO SERVER: '
-                        '\nTUNNEL ID: '+myClient.getDestTunnelId()+
-                        '\n    MY ID: '+myClient.getId().__str__()+
-                        '\nMESSAGE SIZE: '+str(clientMsgSize)+
-                        '\nMESSAGE: \n'+str(clientMessage)+
-                        '====================================================\n')
+                    # print('====================================================\n'
+                    #     'NEW MESSAGE SENT TO SERVER: '
+                    #     '\nTUNNEL ID: '+myClient.getDestTunnelId()+
+                    #     '\n    MY ID: '+myClient.getId().__str__()+
+                    #     '\nMESSAGE SIZE: '+str(clientMsgSize)+
+                    #     '\nMESSAGE: \n'+str(clientMessage)+
+                    #     '====================================================\n')
                     serverSocket.sendall(data_to_server)
         # else:
         #     print "waiting for data to read"
 ###########################################################################################################
 def handleNewClientConnections(localPort, tunnelID, destPort):
-    print("Listening at port: " + str(localPort))
+    # print("Listening at port: " + str(localPort))
     listen_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_client_socket.bind((LOCALHOST, localPort))
@@ -94,7 +94,7 @@ def handleNewClientConnections(localPort, tunnelID, destPort):
             os._exit(0)
         ## if connected to server return TRUE else FALSE
         if(newClient.connectToServer()):
-            print("\nConnection established!")
+            # print("\nConnection established!")
             ## new thread to handle communication
             ## client object and server object
             newClient.setDestTunnelId(tunnelID)
@@ -105,15 +105,15 @@ def handleNewClientConnections(localPort, tunnelID, destPort):
             newClient.getConnection().close()
 ###########################################################################################################
 def setupClient(params):
-    print("STARTING UP CLIENT...")
+    # print("STARTING UP CLIENT...")
     tunnelID = params[1]
     localPort = int(params[2])
     destPort = int(params[3])
-    print('\n====================================================\n'
-            'param1: '+tunnelID+
-            '\nparam2: '+str(localPort)+
-            '\nparam3: '+str(destPort)+
-            '\n====================================================\n')
+    # print('\n====================================================\n'
+    #         'param1: '+tunnelID+
+    #         '\nparam2: '+str(localPort)+
+    #         '\nparam3: '+str(destPort)+
+    #         '\n====================================================\n')
     handleNewClientConnections(localPort, tunnelID, destPort)
 
 ###########################################################################################################

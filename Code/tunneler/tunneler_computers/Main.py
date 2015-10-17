@@ -52,18 +52,21 @@ def serverMessageHandler(serverObject):
             for sock in r:
                 if(sock == serverSocket):
                     client_ID = readData(serverSocket, TUNNEl_CLIENT_ID_SIZE)
+                    if(len(client_ID) == 0):
+                        sys.stderr.write("Server closed connection...")
+                        os._exit(0)
                     ##if client does not exist
                     if(client_ID not in ACTIVE_SERVER_CLIENTS):
                         dest_port = readData(serverSocket, PORT_SIZE_VALUE)
-                        if(len(client_ID) == 0 or len(dest_port) == 0):
+                        if(len(dest_port) == 0):
                             sys.stderr.write("Server closed connection...")
                             os._exit(0)
                         else:
-                            print('\n====================================================\n'
-                                    "New Client!"
-                                    "\nclient id: " +client_ID+
-                                    "\nlocal destination port: "+str(int(dest_port,2))
-                                    +'\n====================================================')
+                            # print('\n====================================================\n'
+                            #         "New Client!"
+                            #         "\nclient id: " +client_ID+
+                            #         "\nlocal destination port: "+str(int(dest_port,2))
+                            #         +'\n====================================================')
                             newServerClient = establishClientTunnelConnection(client_ID, dest_port)
                             ACTIVE_SERVER_CLIENTS[client_ID] = newServerClient
                             if(newServerClient == None):
@@ -77,15 +80,15 @@ def serverMessageHandler(serverObject):
                         data_size = readData(serverSocket, DATA_SIZE_VALUE)
                         serverMsg = readData(serverSocket, int(data_size, 2))
                         if(len(data_size) == 0 or len(serverMsg) == 0):
-                            sys.stderr.write("Server closed connection...")
-                            os._exit(0)
-                        print('\n====================================================\n'
-                                "Received message from server"
-                                "\nclient id: " + client_ID +
-                                "\nto program: %08x" % id(ACTIVE_SERVER_CLIENTS[client_ID].getProgram()) +
-                                "\nmessage: "+ str(serverMsg)
-                                +'\n====================================================\n')
-                        ACTIVE_SERVER_CLIENTS[client_ID].getProgram().getSocket().sendall(serverMsg)
+                            del ACTIVE_SERVER_CLIENTS[client_ID]
+                        else:
+                            # print('\n====================================================\n'
+                            #         "Received message from server"
+                            #         "\nclient id: " + client_ID +
+                            #         "\nto program: %08x" % id(ACTIVE_SERVER_CLIENTS[client_ID].getProgram()) +
+                            #         "\nmessage: "+ str(serverMsg)
+                            #         +'\n====================================================\n')
+                            ACTIVE_SERVER_CLIENTS[client_ID].getProgram().getSocket().sendall(serverMsg)
                 else:
                     serverClient = serverClientsObjects[sock]
                     try:
@@ -103,12 +106,12 @@ def serverMessageHandler(serverObject):
                                 + serverClient.getId().encode() \
                                 + bytes(bin(programMsgSize)[2:].zfill(DATA_SIZE_VALUE)) \
                                 + programMsg
-                    print('\n====================================================\n'
-                            "RECEIVED MESSAGE FROM PROGRAM"
-                            "\nMESSAGE WILL BE SEND TO CLIENT: " + serverClient.getId() +
-                            "\nMESSAGE SIZE: "+ str(len(programMsg)) +
-                            "\nMESSAGE: \n"+ str(programMsg)
-                            +'\n====================================================\n')
+                    # print('\n====================================================\n'
+                    #         "RECEIVED MESSAGE FROM PROGRAM"
+                    #         "\nMESSAGE WILL BE SEND TO CLIENT: " + serverClient.getId() +
+                    #         "\nMESSAGE SIZE: "+ str(len(programMsg)) +
+                    #         "\nMESSAGE: \n"+ str(programMsg)
+                    #         +'\n====================================================\n')
                     serverSocket.sendall(msgToSend)
 #####################################################################################################
 def fatalErrConnectionHandler(serverSocket, message):
@@ -128,10 +131,10 @@ def startTunnelConnection(serverObject):
     # creste server object
     if(serverObject.connect()):
         serverObject.sendInitialMessage(myId)
-        print('\n====================================================\n'
-                "Tunnel created!"
-                "\nTunnel id: " + myId
-                +'\n====================================================\n')
+        # print('\n====================================================\n'
+        #         "Tunnel created!"
+        #         "\nTunnel id: " + myId
+        #         +'\n====================================================\n')
         serverMessageHandler(serverObject)
     else:
         os._exit(0)
