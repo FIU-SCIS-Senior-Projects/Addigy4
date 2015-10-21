@@ -26,19 +26,23 @@ def ClientServerCommunication(client, destPort):
     is_writable = []
     is_error = []
     while True:
-        r, w, e = select.select(is_readable, is_writable, is_error, 1.0)
+        r, w, e = select.select(is_readable, is_writable, is_error, 0)
         if r:
             for sock in r:
                 if(sock == serverSocket):
                     try:
                         serverMsgSize = readData(serverSocket, DATA_SIZE_VALUE)
                         if(len(serverMsgSize)==0):
-                            message = 'Communication closed by program!\nClosing connections...'
+                            message = 'Communication closed by Server!\nClosing connections...'
                             errorConnectionHanlder(client, message)
+                            is_readable.remove(clientSocket)
+                            is_readable.remove(serverSocket)
                             return
                     except SocketError:
-                        message = 'Communication closed by program!\nClosing connections...'
+                        message = 'Communication closed by Server!\nClosing connections...'
                         errorConnectionHanlder(client, message)
+                        is_readable.remove(clientSocket)
+                        is_readable.remove(serverSocket)
                         return
 
                     serverMsg = readData(serverSocket, int(serverMsgSize, 2))
@@ -53,10 +57,14 @@ def ClientServerCommunication(client, destPort):
                         if(clientMsgSize == 0):
                             message = 'Communication closed by program!\nClosing connections...'
                             errorConnectionHanlder(client,message)
+                            is_readable.remove(clientSocket)
+                            is_readable.remove(serverSocket)
                             return
                     except SocketError:
                         message = 'Communication closed by program!\nClosing connections...'
                         errorConnectionHanlder(client, message)
+                        is_readable.remove(clientSocket)
+                        is_readable.remove(serverSocket)
                         return
 
                     data_to_server = myClient.getDestTunnelId().encode() \

@@ -18,8 +18,8 @@ TUNNEl_CLIENT_ID_SIZE = 36
 DATA_SIZE_VALUE = 12
 PORT_SIZE_VALUE = 32
 
-TUNNELS_DIC = {}
-TUNNELS_ON_SELECT = []
+# TUNNELS_DIC = {}
+# TUNNELS_ON_SELECT = []
 
 
 # List of all active sockets to receive information from
@@ -146,11 +146,11 @@ def listenToReadyQueue():
             if(value):
                 ACTIVE_SOCKETS.append(socketObj.getSocket())
             else:
-                raise Exception ("Socket closed")
+                raise Exception ("Socket connection closed")
         except Exception as e:
             del SOCKETS_DICT[socketObj.getSocket()]
             del SOCKETS_ID_DICT[socketObj.getId()]
-            socketObj.cleanUp()
+            socketObj.cleanUp(ACTIVE_SOCKETS)
             sys.stderr.write(str(e))
             traceback.print_exc()
 ##################################################################################################

@@ -39,7 +39,6 @@ class Tunnel():
         tunnelId = self.readData(TUNNEl_CLIENT_ID_SIZE)
         destClientId = self.readData(TUNNEl_CLIENT_ID_SIZE)
         if(len(destClientId) == 0):
-            print('closing tunnel connection...')
             return False
         else:
             msgSize = self.readData(DATA_SIZE_VALUE)
@@ -65,6 +64,7 @@ class Tunnel():
             dataSize -= len(newbuf)
         return buf
 
-    def cleanUp(self):
+    def cleanUp(self, ACTIVE_SOCKETS):
         for sockId in self.__activeClients.keys():
-            self.__activeClients[sockId].cleanUp()
+            # ACTIVE_SOCKETS.remove(self.__activeClients[sockId].getSocket())
+            self.__activeClients[sockId].cleanUp(ACTIVE_SOCKETS)

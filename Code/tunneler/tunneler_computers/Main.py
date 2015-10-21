@@ -42,7 +42,7 @@ def serverMessageHandler(serverObject):
     is_error = []
     while True:
         try:
-            r, w, e = select.select(is_readable, is_writable, is_error, 1.0)
+            r, w, e = select.select(is_readable, is_writable, is_error, 0)
         except KeyboardInterrupt:
             errMsg = "\nClient is being terminated by user!\nClosing connections..."
             fatalErrConnectionHandler(serverSocket, errMsg)
@@ -94,11 +94,11 @@ def serverMessageHandler(serverObject):
                     try:
                         programMsg = sock.recv(BUFFER_SIZE)
                     except SocketError:
-                        errMsg = 'Program terminated connection!'
+                        errMsg = '\nProgram terminated connection!'
                         sys.stderr.write(errMsg)
                     programMsgSize = len(programMsg)
                     if(programMsgSize == 0):
-                        sys.stderr.write("Connection closed by program!")
+                        sys.stderr.write("\nConnection closed by program!")
                         is_readable.remove(sock)
                         serverClient.getProgram().getSocket().close()
                         break

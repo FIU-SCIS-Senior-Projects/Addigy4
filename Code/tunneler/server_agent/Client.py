@@ -81,8 +81,9 @@ class Client():
             dataSize -= len(newbuf)
         return buf
 
-    def cleanUp(self):
+    def cleanUp(self, ACTIVE_SOCKETS):
         try:
+            ACTIVE_SOCKETS.remove(self.getSocket())
             self.__socket.close()
         except Exception as e:
             sys.stderr.write(str(e))
