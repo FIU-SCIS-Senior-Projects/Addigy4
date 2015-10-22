@@ -23,6 +23,3 @@ class Program():
 
     def getSocket(self):
         return self.__socket
-
-    def __del__(self):
-        print ("__del__() called: LocalClient object %08x destroyed" % id(self))

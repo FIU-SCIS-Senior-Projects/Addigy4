@@ -40,6 +40,3 @@ class Client():
 
     def sendInitialMessage(self, message):
         self.getServerObject().sendMessage(message)
-
-    def __del__(self):
-        print ("__del__() called: client object %08x destroyed" % id(self))

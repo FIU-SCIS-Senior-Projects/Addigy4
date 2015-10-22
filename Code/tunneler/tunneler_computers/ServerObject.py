@@ -4,7 +4,7 @@ import socket
 
 class Server():
     __serverPort = 0
-    __url = ""
+    __url = "fiu.addigy.com"
     __socket = None
 
     def __init__(self):
@@ -30,6 +30,3 @@ class Server():
 
     def getSocket(self):
         return self.__socket
-
-    def __del__(self):
-        print ("__del__() called: server object %08x destroyed" % id(self))
