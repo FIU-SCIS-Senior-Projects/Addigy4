@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-import pika
-import uuid
+import pubsub_python
 __author__ = 'David'
 
+sample = pubsub_python.PubSub(addr='localhost', queue_name='hello')
+message = input("Please enter your message: ")
 
-terminal_rpc = RemoteProcedure()
+while(True):
+    channel.basic_publish(exchange='',
+                      routing_key='hello',
+                      body='Hello World!')
+    print(" [x] Sent '%s!'" % (message,))
 
-print("[x] Requesting terminal open of 'Hello World!'")
-response = terminal_rpc.call("Hello World!")
-print("[.] Got %r" % (response,))
-
+    if (message="exit"):
+        sample.close()
