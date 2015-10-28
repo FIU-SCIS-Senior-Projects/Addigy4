@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html><head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-  <script src="../javascript/pubsub.js"></script>
+  <script src="pubsub.js"></script>
+  <title>Baby steps</title>
 </head><body lang="en">
+
     <div id="first" class="box">
       <h2>Received</h2>
       <div></div>
@@ -36,31 +38,35 @@
             }
             return print;
         };
+		
+		var PUBSUB = new PubSub({
+            location: 'http://' + window.location.hostname + ':15674/stomp',
+            login: 'guest',
+            password: 'guest',
+            heartbeats_outcoming: 1000,
+            heartbeats_incoming: 0
+		});
+	  
+		var print_first = pipe('#first', function(data) {
+			PUBSUB.send('/exchange/messages/guest', {"content-type":"text/plain"}, data);
+		});
+		var on_connect = function(x) {
+			id = PUBSUB.subscribe("/exchange/messages/guest", function(d) {
+					print_first(d.body);
+				});
+			};
+			var on_error =  function() {
+			console.log('error');
+		};
+	  
+	  console.log("about to connect");
+		PUBSUB.connect(on_connect, on_error, '/');
 
-      var PUBSUB = pubsub.init({
-		location: 'http://' + window.location.hostname + ':15674/stomp'
-	  });
-      var print_first = pipe('#test', function(data) {
-          client.send('/topic/test', {"content-type":"text/plain"}, data);
-      });
-      var on_connect = function(x) {
-          id = client.subscribe("/topic/test", function(d) {
-               print_first(d.body);
-          });
-      };
-      var on_error =  function() {
-        console.log('error');
-      };
-	  
-	  pubsub.connect();
-	  
-	  PUBSUB.alert();
-	  
-      $('#first input').focus(function() {
-          if (!has_had_focus) {
-              has_had_focus = true;
-              $(this).val("");
-          }
-      });
+		$('#first input').focus(function() {
+			if (!has_had_focus) {
+				has_had_focus = true;
+				$(this).val("");
+			}
+		});
     </script>
 </body></html>
