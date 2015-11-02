@@ -3,6 +3,8 @@
     abstraction/extension of the existing pika library used to communicate with RabbitMQ. That is to say, this class
     faciliates communication, simplifying what could result in lines of repetitious and cumbersome operations into a 
     few lines of code. This class's usage was insipired by PubNub.
+    
+    In addition to serving as a further abstraction of existing technologies, this project also introduces ability to keep track     of who is entering and exiting the channel. 
 
 ##Installation:
     1) There must exist an installation of Python, in order to download visit https://www.python.org/downloads/ 
