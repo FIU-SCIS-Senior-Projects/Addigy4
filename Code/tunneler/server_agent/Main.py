@@ -12,7 +12,7 @@ from socket import error as SocketError
 
 __tunnel_connection_port = 8000
 __client_connection_port = 7000
-__HOST = 'localhost'
+__HOST = '0.0.0.0'
 
 TUNNEl_CLIENT_ID_SIZE = 36
 DATA_SIZE_VALUE = 12
