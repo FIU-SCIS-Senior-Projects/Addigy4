@@ -12,7 +12,7 @@ from socket import error as SocketError
 
 __tunnel_connection_port = 8000
 __client_connection_port = 7000
-__HOST = 'localhost'
+__HOST = '0.0.0.0'
 
 TUNNEl_CLIENT_ID_SIZE = 36
 DATA_SIZE_VALUE = 12
@@ -76,7 +76,7 @@ def initClientConnections(__HOST, __client_connection_port):
     while True:
         try:
             client_connection, client_address = listen_client_socket.accept()
-            # print("\nNew Client Connection!")
+            # print("\nNew Client Connection!: " + client_address)
             newClient = getClient(client_connection, client_address)
             if(newClient != None):
                 SOCKETS_ID_DICT[newClient.getId()] = newClient
@@ -97,6 +97,7 @@ def initTunnelConnections(__HOST, __tunnel_connection_port):
     while True:
         try:
             tunnel_connection, tunnel_address = listen_tunnel_socket.accept()
+            print("\nNew Client Connection!: " + str(tunnel_address) + "--" +str(tunnel_connection._sock))
         except KeyboardInterrupt:
             message = "\nServer disconnecting!\nClosing connections..."
             errConnectionHandler(listen_tunnel_socket, message)
