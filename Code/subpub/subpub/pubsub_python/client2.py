@@ -3,7 +3,7 @@ import pubsub
 import threading
 __author__ = 'David'
 
-sample = pubsub.PubSub(addr='localhost', queue_name='david', username='david', password='guest', auto_delete=True)
+sample = pubsub.PubSub(addr='localhost', queue_name='guest', username='guest', password='guest', auto_delete=True)
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()
 PRESENCE_EXCHANGE = sample.get_presenceexchange()
@@ -26,7 +26,7 @@ started = False
 
 
 def consume():
-        sample.subscribe(callback, queue_name='david', no_ack=True)
+        sample.subscribe(callback, queue_name='guest', no_ack=True)
 
 
 while True:
@@ -35,12 +35,12 @@ while True:
         thread.start()
         started = True
 
-    message = input("")
+    message = input("\n")
 
     if message == "exit":
         sample.disconnect()
 
-    sample.publish(routing_key='david',
+    sample.publish(routing_key='guest',
                    body=message)
 
 
