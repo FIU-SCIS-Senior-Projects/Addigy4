@@ -35,7 +35,13 @@
     4) Simply import the pubsub.js file by use of the <script> tags in an HTML file
 
 ##Running:
-
+    1) Begin by creating a rabbitmq.config file (a sample can be found under your RabbitMQ installations /etc folder)
+    2) Place the newly created config file in /etc/rabbitmq (OS X/Linux) or \Program Files (x86)\RabbitMQ on Windows
+    3) Download presence exchange from https://github.com/tonyg/presence-exchange and place the .ez build in the          rabbitmq_server installation folder's /plugins folder
+    4) Using the command line/terminal, navigate to the rabbitmq_server installation folder's /sbin folder and enable the following plugins: rabbitmq_webstomp, rabbit_presence_exchange
+       This can be done by entering the following in the command line/terminal: 
+       rabbitmq-plugins enable rabbitmq_web_stomp
+       rabbitmq-plugins enable rabbit_presence_exchange
 ##TODO:
     - Configuration script for the RabbitMQ environment that includes automatic set-up of the necessary plugins.
     - Faciliate installation of pubsub.py
