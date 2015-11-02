@@ -1,4 +1,4 @@
-#Addigy project has two goals:
+#The Addigy project has two goals:
 
 ## Tunneler:
 	- Project is intended to establish a connection between two clients using a middle server.
