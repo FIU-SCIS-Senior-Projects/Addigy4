@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-  <script src="pubsub.js"></script>
+  <script src="../javascript/pubsub.js"></script>
   <title>Baby steps</title>
 </head><body lang="en">
 
@@ -38,7 +38,7 @@
             }
             return print;
         };
-		
+
 		var PUBSUB = new PubSub({
             location: 'http://' + window.location.hostname + ':15674/stomp',
             login: 'guest',
@@ -46,7 +46,7 @@
             heartbeats_outcoming: 1000,
             heartbeats_incoming: 0
 		});
-	  
+
 		var print_first = pipe('#first', function(data) {
 			PUBSUB.send('/exchange/messages/guest', {"content-type":"text/plain"}, data);
 		});
@@ -58,7 +58,7 @@
 			var on_error =  function() {
 			console.log('error');
 		};
-	  
+
 	  console.log("about to connect");
 		PUBSUB.connect(on_connect, on_error, '/');
 
