@@ -2,32 +2,37 @@ function PubSub(args){
 	var self = this;
 	self.location = args['location'];
 	self.heartbeats_outcoming = args['heartbeats_outcoming'];
-    self.heartbeats_incoming = args['heartbeats_incoming'];
-    self.login = args['login']; 
-    self.password = args['password']; 
+  self.heartbeats_incoming = args['heartbeats_incoming'];
+  self.login = args['login'];
+  self.password = args['password'];
 	init();
-	
+
 	function init() {
 		self.ws = new SockJS(self.location);
 		self.client = Stomp.over(self.ws);
 		self.client.heartbeat.outgoing = self.heartbeats_outcoming;
 		self.client.heartbeat.incoming = self.heartbeats_incoming;
 	}
-	
+
 	self.send = function(channel, args, data) {
-        self.client.send("/exchange/presence/"+self.login, {"exchange": "presence", "queue": self.login, "action": "bind", "key": self.login});
+        self.client.send("/exchange/presence/"+self.login, {"exchange":
+				"presence", "queue": self.login, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
-	
+
 	self.subscribe = function(channel, action) {
         self.client.subscribe("/exchange/presence/"+self.login, function(d) {
 					console.log("User " + self.login + " has entered");
 				});
 		return self.client.subscribe(channel, action);
 	}
-	
+
 	self.connect = function(fun1, fun2, host) {
 		return self.client.connect(self.login, self.password, fun1, fun2, host);
+	}
+
+	self.disconnect = function(fun1) {
+		return self.client.disconnect(fun1);
 	}
 }
 
