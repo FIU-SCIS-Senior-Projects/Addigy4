@@ -1,1 +1,1 @@
-@reboot '/var/opt/server_agent/on_startup.sh'
+@reboot '/var/opt/server/on_startup.sh'
