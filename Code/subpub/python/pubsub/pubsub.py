@@ -15,8 +15,8 @@ class PubSub(object):
 
         self.username = username
         self.password = password
-        self.MESSAGES_EXCHANGE = "messages"
-        self.PRESENCE_EXCHANGE = "presence"
+        self.MESSAGES_EXCHANGE = queue_name + "_messages"
+        self.PRESENCE_EXCHANGE = queue_name + "_presence"
 
         credentials = pika.PlainCredentials(self.username, self.password)
 

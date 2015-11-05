@@ -3,7 +3,8 @@ import pubsub
 import threading
 __author__ = 'David'
 
-sample = pubsub.PubSub(addr='localhost', queue_name='guest', username='guest', password='guest', auto_delete=True)
+sample = pubsub.PubSub(addr='localhost', queue_name='guest', username='guest', password='guest', auto_delete=True,
+                       heartbeat_interval=2)
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()
 PRESENCE_EXCHANGE = sample.get_presenceexchange()
