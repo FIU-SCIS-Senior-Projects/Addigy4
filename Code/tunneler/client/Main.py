@@ -19,56 +19,53 @@ def ClientServerCommunication(client, destPort):
             + client.getId().__str__()
     client.sendInitialMessage(message)
 
-    myClient = client
-    clientSocket = myClient.getConnection()
-    serverSocket = myClient.getServerObject().getSocket()
-    is_readable = [clientSocket, serverSocket]
+    is_readable = [client.getConnection(), client.getServerObject().getSocket()]
     is_writable = []
     is_error = []
     while True:
         r, w, e = select.select(is_readable, is_writable, is_error, 0)
         if r:
             for sock in r:
-                if(sock == serverSocket):
+                if(sock == client.getServerObject().getSocket()):
                     try:
-                        serverMsgSize = readData(serverSocket, DATA_SIZE_VALUE)
+                        serverMsgSize = readData(client.getServerObject().getSocket(), DATA_SIZE_VALUE)
                         if(len(serverMsgSize)==0):
                             message = 'Communication closed by Server!\nClosing connections...'
                             errorConnectionHanlder(client, message)
-                            is_readable.remove(clientSocket)
-                            is_readable.remove(serverSocket)
+                            is_readable.remove(client.getConnection())
+                            is_readable.remove(client.getServerObject().getSocket())
                             return
                     except SocketError:
                         message = 'Communication closed by Server!\nClosing connections...'
                         errorConnectionHanlder(client, message)
-                        is_readable.remove(clientSocket)
-                        is_readable.remove(serverSocket)
+                        is_readable.remove(client.getConnection())
+                        is_readable.remove(client.getServerObject().getSocket())
                         return
 
-                    serverMsg = readData(serverSocket, int(serverMsgSize, 2))
+                    serverMsg = readData(client.getServerObject().getSocket(), int(serverMsgSize, 2))
                     # print('\n====================================================\n'
                     #     'Message from server: '+serverMsg+
                     #     '\n====================================================\n')
-                    clientSocket.sendall(serverMsg)
+                    client.getConnection().sendall(serverMsg)
                 else:
                     try:
-                        clientMessage = clientSocket.recv(BUFFER_SIZE)
+                        clientMessage = client.getConnection().recv(BUFFER_SIZE)
                         clientMsgSize = len(clientMessage)
                         if(clientMsgSize == 0):
                             message = 'Communication closed by program!\nClosing connections...'
                             errorConnectionHanlder(client,message)
-                            is_readable.remove(clientSocket)
-                            is_readable.remove(serverSocket)
+                            is_readable.remove(client.getConnection())
+                            is_readable.remove(client.getServerObject().getSocket())
                             return
                     except SocketError:
                         message = 'Communication closed by program!\nClosing connections...'
                         errorConnectionHanlder(client, message)
-                        is_readable.remove(clientSocket)
-                        is_readable.remove(serverSocket)
+                        is_readable.remove(client.getConnection())
+                        is_readable.remove(client.getServerObject().getSocket())
                         return
 
-                    data_to_server = myClient.getDestTunnelId().encode() \
-                                    + myClient.getId().__str__().encode() \
+                    data_to_server = client.getDestTunnelId().encode() \
+                                    + client.getId().__str__().encode() \
                                     + bytes(bin(clientMsgSize)[2:].zfill(DATA_SIZE_VALUE)) \
                                     + clientMessage
                     # print('====================================================\n'
@@ -78,7 +75,7 @@ def ClientServerCommunication(client, destPort):
                     #     '\nMESSAGE SIZE: '+str(clientMsgSize)+
                     #     '\nMESSAGE: \n'+str(clientMessage)+
                     #     '====================================================\n')
-                    serverSocket.sendall(data_to_server)
+                    client.getServerObject().getSocket().sendall(data_to_server)
         # else:
         #     print "waiting for data to read"
 ###########################################################################################################

@@ -4,7 +4,6 @@
 		- Client: which is going to be used in machines that are going to initialize connections
 		- Tunneler: Which is going to be installed on machines where the user wants to connect to
 		- Server: which is going to be running on the server redirecting each data message received to intended recipient
-		- Webhost Local is a simple web server for testing purposes of accessing a tunnel with a running server for web access.
 
 ##Installation:
 	1) Server needs to be uploaded to a web services such as AWS and ports 7000 and 8000 has to be opened.
