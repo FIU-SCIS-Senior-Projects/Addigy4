@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/subpub.iml" filepath="$PROJECT_DIR$/.idea/subpub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pubsub_python.iml" filepath="$PROJECT_DIR$/.idea/pubsub_python.iml" />
     </modules>
   </component>
 </project>

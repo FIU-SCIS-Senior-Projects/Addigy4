@@ -2,20 +2,22 @@
 <html><head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script src="../javascript/pubsub.js"></script>
+  <title>Baby steps</title>
 </head><body lang="en">
+
     <div id="first" class="box">
       <h2>Received</h2>
       <div></div>
-      <form><input id="testinput" autocomplete="off" value="Type here..."></input></form>
+      <form><input autocomplete="off" value="Type here..."></input></form>
     </div>
 
     <div id="second" class="box">
       <h2>Logs</h2>
-      <div id="test"></div>
+      <div></div>
     </div>
 
     <script>
-          var has_had_focus = false;
+        var has_had_focus = false;
         var pipe = function(el_name, send) {
             var div  = $(el_name + ' div');
             var inp  = $(el_name + ' input');
@@ -37,34 +39,34 @@
             return print;
         };
 
-      // Stomp.js boilerplate
-      var ws = new SockJS('http://' + window.location.hostname + ':15674/stomp');
-      var client = Stomp.over(ws);
+		var PUBSUB = new PubSub({
+            location: 'http://' + window.location.hostname + ':15674/stomp',
+            login: 'guest',
+            password: 'guest',
+            heartbeats_outcoming: 1000,
+            heartbeats_incoming: 0
+		});
 
-      // SockJS does not support heart-beat: disable heart-beats
-      client.heartbeat.outgoing = 0;
-      client.heartbeat.incoming = 0;
-      client.debug = pipe('#second');
+		var print_first = pipe('#first', function(data) {
+			PUBSUB.send('/exchange/messages/guest', {"content-type":"text/plain"}, data);
+		});
+		var on_connect = function(x) {
+			id = PUBSUB.subscribe("/exchange/messages/guest", function(d) {
+					print_first(d.body);
+				});
+			};
+			var on_error =  function() {
+			console.log('error');
+		};
 
-      var print_first = pipe('#first', function(data) {
-          client.send('/topic/test', {"content-type":"text/plain"}, data);
-      });
-      var on_connect = function(x) {
-          id = client.subscribe("/topic/test", function(d) {
-               print_first(d.body);
-          });
-      };
-      var on_error =  function() {
-        console.log('error');
-      };
-      client.connect('guest', 'guest', on_connect, on_error, '/');
+	  console.log("about to connect");
+		PUBSUB.connect(on_connect, on_error, '/');
 
-      $('#first input').focus(function() {
-          if (!has_had_focus) {
-              has_had_focus = true;
-              $(this).val("");
-          }
-      });
-	  
+		$('#first input').focus(function() {
+			if (!has_had_focus) {
+				has_had_focus = true;
+				$(this).val("");
+			}
+		});
     </script>
 </body></html>
