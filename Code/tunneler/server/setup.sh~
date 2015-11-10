@@ -2,7 +2,7 @@
 SETUP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SETUP_DIR
 cd ..
-cp -rf server /var/opt/
+cp -rf server_agent /var/opt/
 runOnReboot="sudo update-rc.d /var/opt/server/on_startup.sh defaults"
 cp -rf /var/opt/server/on_startup.sh /etc/init.d/
 sudo chmod +x /etc/init.d/on_startup.sh
