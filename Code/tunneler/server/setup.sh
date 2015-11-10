@@ -9,4 +9,4 @@ sudo chmod +x /etc/init.d/on_startup.sh
 sudo update-rc.d on_startup.sh defaults
 sudo update-rc.d on_startup.sh start defaults
 sudo update-rc.d on_startup.sh stop defaults
-python /var/opt/server/Main.py
+python /var/opt/server/Main.py &
