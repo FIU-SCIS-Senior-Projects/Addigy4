@@ -15,7 +15,7 @@ class Server():
 
     def __init__(self):
         self.__serverPort = 7000
-        self.__url = 'localhost'
+        self.__url = 'addigy-dev.cis.fiu.edu'
 
     def connect(self):
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
