@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import pubsub
+import requests
+from pubsub import pubsub
 import threading
 __author__ = 'David'
 
@@ -28,7 +29,6 @@ started = False
 
 def consume():
         sample.subscribe(callback, queue_name='guest', no_ack=True)
-
 
 while True:
     if started is False:

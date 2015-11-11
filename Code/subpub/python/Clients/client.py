@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import pubsub
+from pubsub import pubsub
 import threading
+
 __author__ = 'David'
 
 sample = pubsub.PubSub(addr='localhost', queue_name='david', username='david', password='guest', auto_delete=True,
-                       heartbeat_interval=2)
+                       heartbeat_interval=60)
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()
 PRESENCE_EXCHANGE = sample.get_presenceexchange()
@@ -28,7 +29,6 @@ started = False
 
 def consume():
         sample.subscribe(callback, queue_name='david', no_ack=True)
-
 
 while True:
     if started is False:
