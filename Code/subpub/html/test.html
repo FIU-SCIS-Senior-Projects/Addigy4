@@ -43,8 +43,8 @@
             location: 'http://' + window.location.hostname + ':15674/stomp',
             login: 'guest',
             password: 'guest',
-            heartbeats_outcoming: 1000,
-            heartbeats_incoming: 0
+            heartbeats_outcoming: 10000,
+            heartbeats_incoming: 10000
 		});
 
 		var print_first = pipe('#first', function(data) {
