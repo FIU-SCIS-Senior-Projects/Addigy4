@@ -41,9 +41,14 @@ class PubSub(object):
 
         # If we send the message to a non-existant location, RabbitMQ will trash the message.
         # Here we declare a queue to which the message will get sent to in the broker
+        if queue_name is not None:
+            self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
+                                       exclusive=exclusive, arguments=arguments)
+
+    def create_queue(queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
         self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                    exclusive=exclusive, arguments=arguments)
-
+    
     def publish(self, routing_key, body, properties=None, mandatory=False, immediate=False):
         self.channel.basic_publish(exchange=self.MESSAGES_EXCHANGE, routing_key=routing_key, body=body, properties=properties,
                                    mandatory=mandatory, immediate=immediate)
