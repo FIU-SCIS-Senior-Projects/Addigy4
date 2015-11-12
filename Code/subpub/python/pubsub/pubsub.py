@@ -45,7 +45,7 @@ class PubSub(object):
             self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                        exclusive=exclusive, arguments=arguments)
 
-    def create_queue(queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
+    def create_queue(self, queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
         self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                    exclusive=exclusive, arguments=arguments)
     
@@ -71,16 +71,3 @@ class PubSub(object):
 
     def disconnect(self):
         self.connection.close()
-
-    def idle_limit(self):
-        JSON = requests.get('http://localhost:15672/api/channels', auth=('guest', 'guest')).json()
-        idle_since = self.find_between(" ", ",\"tr")
-        return idle_since
-
-    def find_between(self, original_string, first, last):
-        try:
-            start = original_string.index(first) + len(first)
-            end = original_string.index(last, start)
-            return original_string[start:end]
-        except ValueError:
-            return ""
