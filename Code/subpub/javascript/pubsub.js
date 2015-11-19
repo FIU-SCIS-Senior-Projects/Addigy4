@@ -17,8 +17,8 @@ function PubSub(args){
 	}
 
 	self.send = function(channel, args, data, queue_name) {
-        // self.client.send("/exchange/"+self.organization+".presence/"+self.login, {"exchange":
-				// "presence", "queue": queue_name, "action": "bind", "key": self.login});
+        self.client.send("/exchange/"+self.organization+".presence/"+self.login, {"exchange":
+				"presence", "queue": queue_name, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
 
