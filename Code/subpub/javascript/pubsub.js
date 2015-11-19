@@ -5,6 +5,7 @@ function PubSub(args){
   self.heartbeats_incoming = args['heartbeats_incoming'];
   self.login = args['login'];
   self.password = args['password'];
+	self.presence
 	init();
 
 	function init() {
@@ -14,13 +15,14 @@ function PubSub(args){
 		self.client.heartbeat.incoming = self.heartbeats_incoming;
 	}
 
-	self.send = function(channel, args, data) {
+	self.send = function(queue, args, data) {
         self.client.send("/exchange/presence/"+self.login, {"exchange":
 				"presence", "queue": self.login, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
 
 	self.subscribe = function(channel, action) {
+
         self.client.subscribe("/exchange/presence/"+self.login, function(d) {
 					console.log("User " + self.login + " has entered");
 				});
@@ -33,6 +35,10 @@ function PubSub(args){
 
 	self.disconnect = function(fun1) {
 		return self.client.disconnect(fun1);
+	}
+
+	self.get_messageexchange() {
+		return
 	}
 }
 
@@ -277,7 +283,7 @@ function PubSub(args){
       };
       this.ws.onclose = function() {
         var msg;
-        msg = login + "Whoops! Lost connection to " + _this.ws.url;
+        msg = "Whoops! Lost connection to " + _this.ws.url;
         if (typeof _this.debug === "function") {
           _this.debug(msg);
         }

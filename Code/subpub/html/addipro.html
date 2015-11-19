@@ -1,9 +1,11 @@
 <html>
     <head>
         <script src="../javascript/pubsub.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
         <script src="../javascript/addipro_utilities.js"></script>
         <link href="../css/addipro_platform.css" rel="stylesheet" type="text/css">
     </head>
+<<<<<<< Updated upstream
     <body>
         <div id="title">
             <p>
@@ -24,7 +26,7 @@
         <div class="output_box" id="connecting_to_output">
             <div></div>
         </div>
-        
+
         <div class="connect-options" id="connect_to">
             <select name="connect_to">
                 <option selected> Connect to...</option>
@@ -33,5 +35,6 @@
                 <option id="3">::1</option>
             </select>
         </div>
+        <button type="submit" onclick="connect_to_shh()">Connect via SSH</button>
     </body>
 </html>
