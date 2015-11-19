@@ -1,6 +1,4 @@
-import time
 import pika
-import requests
 __author__ = 'David'
 
 
@@ -12,13 +10,13 @@ class PubSub(object):
                  frame_max=None, heartbeat_interval=None,
                  ssl=None, ssl_options=None, connection_attempts=None, retry_delay=None, socket_timeout=None,
                  locale=None,
-                 backpressure_detection=None, passive=False, exclusive=False, auto_delete=False, arguments=None):
+                 backpressure_detection=None, passive=False, exclusive=False, auto_delete=False, arguments=None,
+                 organization=''):
 
         self.username = username
         self.password = password
-        self.MESSAGES_EXCHANGE = "messages"
-        self.PRESENCE_EXCHANGE = "presence"
-        self.CURRENT_TIME = int(round(time.time() * 1000))
+        self.MESSAGES_EXCHANGE = organization+".messages"
+        self.PRESENCE_EXCHANGE = organization+".presence"
 
         credentials = pika.PlainCredentials(self.username, self.password)
 
@@ -45,7 +43,7 @@ class PubSub(object):
             self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                        exclusive=exclusive, arguments=arguments)
 
-    def create_queue(queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
+    def create_queue(self, queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
         self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                    exclusive=exclusive, arguments=arguments)
     
@@ -71,16 +69,3 @@ class PubSub(object):
 
     def disconnect(self):
         self.connection.close()
-
-    def idle_limit(self):
-        JSON = requests.get('http://localhost:15672/api/channels', auth=('guest', 'guest')).json()
-        idle_since = self.find_between(" ", ",\"tr")
-        return idle_since
-
-    def find_between(self, original_string, first, last):
-        try:
-            start = original_string.index(first) + len(first)
-            end = original_string.index(last, start)
-            return original_string[start:end]
-        except ValueError:
-            return ""

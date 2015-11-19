@@ -5,6 +5,8 @@ function PubSub(args){
   self.heartbeats_incoming = args['heartbeats_incoming'];
   self.login = args['login'];
   self.password = args['password'];
+	self.presence;
+	self.organization = args['organization'];
 	init();
 
 	function init() {
@@ -14,16 +16,17 @@ function PubSub(args){
 		self.client.heartbeat.incoming = self.heartbeats_incoming;
 	}
 
-	self.send = function(channel, args, data) {
-        self.client.send("/exchange/presence/"+self.login, {"exchange":
-				"presence", "queue": self.login, "action": "bind", "key": self.login});
+	self.send = function(channel, args, data, queue_name) {
+        // self.client.send("/exchange/"+self.organization+".presence/"+self.login, {"exchange":
+				// "presence", "queue": queue_name, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
 
-	self.subscribe = function(channel, action) {
-        self.client.subscribe("/exchange/presence/"+self.login, function(d) {
-					console.log("User " + self.login + " has entered");
-				});
+	self.subscribe = function(channel, action, queue_name) {
+
+        // self.client.subscribe("/exchange/"+self.organization+".presence/"+self.login, function(d) {
+				// 	console.log("User " + self.login + " has entered");
+				// });
 		return self.client.subscribe(channel, action);
 	}
 
@@ -277,7 +280,7 @@ function PubSub(args){
       };
       this.ws.onclose = function() {
         var msg;
-        msg = login + "Whoops! Lost connection to " + _this.ws.url;
+        msg = "Whoops! Lost connection to " + _this.ws.url;
         if (typeof _this.debug === "function") {
           _this.debug(msg);
         }
