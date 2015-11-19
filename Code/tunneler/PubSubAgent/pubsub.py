@@ -1,6 +1,4 @@
-import time
 import pika
-import requests
 __author__ = 'David'
 
 
@@ -12,13 +10,13 @@ class PubSub(object):
                  frame_max=None, heartbeat_interval=None,
                  ssl=None, ssl_options=None, connection_attempts=None, retry_delay=None, socket_timeout=None,
                  locale=None,
-                 backpressure_detection=None, passive=False, exclusive=False, auto_delete=False, arguments=None):
+                 backpressure_detection=None, passive=False, exclusive=False, auto_delete=False, arguments=None,
+                 organization=''):
 
         self.username = username
         self.password = password
-        self.MESSAGES_EXCHANGE = "messages"
-        self.PRESENCE_EXCHANGE = "presence"
-        self.CURRENT_TIME = int(round(time.time() * 1000))
+        self.MESSAGES_EXCHANGE = organization+".messages"
+        self.PRESENCE_EXCHANGE = organization+".presence"
 
         credentials = pika.PlainCredentials(self.username, self.password)
 
