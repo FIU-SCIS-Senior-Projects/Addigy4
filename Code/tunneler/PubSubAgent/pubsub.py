@@ -1,5 +1,6 @@
+import time
 import pika
-
+import requests
 __author__ = 'David'
 
 
@@ -15,8 +16,9 @@ class PubSub(object):
 
         self.username = username
         self.password = password
-        self.MESSAGES_EXCHANGE = queue_name + "_messages"
-        self.PRESENCE_EXCHANGE = queue_name + "_presence"
+        self.MESSAGES_EXCHANGE = "messages"
+        self.PRESENCE_EXCHANGE = "presence"
+        self.CURRENT_TIME = int(round(time.time() * 1000))
 
         credentials = pika.PlainCredentials(self.username, self.password)
 
@@ -39,9 +41,14 @@ class PubSub(object):
 
         # If we send the message to a non-existant location, RabbitMQ will trash the message.
         # Here we declare a queue to which the message will get sent to in the broker
+        if queue_name is not None:
+            self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
+                                       exclusive=exclusive, arguments=arguments)
+
+    def create_queue(self, queue_name=None, passive=None, auto_delete=False, exclusive=None, arguments=None):
         self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                    exclusive=exclusive, arguments=arguments)
-
+    
     def publish(self, routing_key, body, properties=None, mandatory=False, immediate=False):
         self.channel.basic_publish(exchange=self.MESSAGES_EXCHANGE, routing_key=routing_key, body=body, properties=properties,
                                    mandatory=mandatory, immediate=immediate)
@@ -49,7 +56,6 @@ class PubSub(object):
     def subscribe(self, callback, queue_name, no_ack=False, exclusive=False, consumer_tag=None, arguments=None):
         self.channel.queue_bind(exchange=self.PRESENCE_EXCHANGE, routing_key=self.username, queue=queue_name)
         self.channel.queue_bind(queue=queue_name, exchange=self.PRESENCE_EXCHANGE, routing_key='')
-        self.channel.queue_bind(queue=queue_name, exchange=self.PRESENCE_EXCHANGE)
         self.channel.queue_bind(exchange=self.MESSAGES_EXCHANGE,
                                 queue=queue_name)
         self.channel.basic_consume(callback, queue=queue_name, no_ack=no_ack, exclusive=exclusive, consumer_tag=consumer_tag,

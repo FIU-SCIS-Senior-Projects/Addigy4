@@ -1,5 +1,7 @@
+import inspect
+
 __author__ = 'cruiz1391'
-import sys, os
+import sys, os, psutil, signal
 import select
 from ServerObject import Server
 from LocalClient import Program
@@ -130,10 +132,8 @@ def startTunnelConnection(serverObject):
     # creste server object
     if(serverObject.connect()):
         serverObject.sendInitialMessage(myId)
-        # print('\n====================================================\n'
-        #         "Tunnel created!"
-        #         "\nTunnel id: " + myId
-        #         +'\n====================================================\n')
+        sys.stdout.write("Tunnel created: " + myId+"\n")
+        sys.stdout.flush()
         serverMessageHandler(serverObject)
     else:
         os._exit(0)
@@ -146,12 +146,35 @@ def readData(socket, dataSize):
         buf += newbuf
         dataSize -= len(newbuf)
     return buf
+
+#####################################################################################################
+def tunnelExist():
+    path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/Main.py"
+    for p in psutil.process_iter():
+        if(len(p.cmdline()) > 2 and str(p.cmdline()[1]) == str(path) and p.cmdline()[2] == myId and p.pid != os.getpid()):
+            sys.stdout.write("Tunnel exist: " + myId+"\n")
+            sys.stdout.flush()
+            return True
+    return False
+#####################################################################################################
+def signal_term_handler(signal, frame):
+    serverObject.getSocket().close()
+    sys.exit(0)
 #####################################################################################################
 if __name__ == '__main__':
     if(len(sys.argv) != 2):
-        print("\nIncorrect number of params <tunnel id>")
+        sys.stderr.write("\nIncorrect number of params <tunnel id>")
+        sys.stderr.flush()
         sys.exit(0)
-    global myId
+    if(len(sys.argv[1]) != TUNNEl_CLIENT_ID_SIZE):
+        sys.stderr.write("\nIncorrect <tunnel id> size. needs to be 36bytes")
+        sys.stderr.flush()
+        sys.exit(0)
+    global myId, serverObject
     myId = sys.argv[1]
     serverObject = Server()
-    startTunnelConnection(serverObject)
+    signal.signal(signal.SIGTERM, signal_term_handler)
+    if(not tunnelExist()):
+        startTunnelConnection(serverObject)
+    else:
+        sys.exit(0)

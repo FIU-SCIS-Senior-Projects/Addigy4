@@ -1,6 +1,9 @@
+import inspect
+import time
+
 __author__ = 'cruiz1391'
 import uuid
-import sys, os
+import sys, os, psutil
 import select
 from socket import error as SocketError
 from threading import *
@@ -85,6 +88,8 @@ def handleNewClientConnections(localPort, tunnelID, destPort):
     listen_client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_client_socket.bind((LOCALHOST, localPort))
     listen_client_socket.listen(5)
+    sys.stdout.write("Client created: " + tunnelID+"\n")
+    sys.stdout.flush()
     while True:
         ## new incoming client connection
         newClient = None
@@ -114,12 +119,15 @@ def setupClient(params):
     tunnelID = params[1]
     localPort = int(params[2])
     destPort = int(params[3])
-    # print('\n====================================================\n'
-    #         'param1: '+tunnelID+
-    #         '\nparam2: '+str(localPort)+
-    #         '\nparam3: '+str(destPort)+
-    #         '\n====================================================\n')
-    handleNewClientConnections(localPort, tunnelID, destPort)
+    if(not clientExist(tunnelID)):
+        # print('\n====================================================\n'
+        #         'param1: '+tunnelID+
+        #         '\nparam2: '+str(localPort)+
+        #         '\nparam3: '+str(destPort)+
+        #         '\n====================================================\n')
+        handleNewClientConnections(localPort, tunnelID, destPort)
+    else:
+        sys.exit(0)
 
 ###########################################################################################################
 def errorConnectionHanlder(clientSocket, message):
@@ -136,6 +144,15 @@ def readData(socket, dataSize):
         buf += newbuf
         dataSize -= len(newbuf)
     return buf
+#####################################################################################################
+def clientExist(tunnelID):
+    path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/Main.py"
+    for p in psutil.process_iter():
+        if(len(p.cmdline()) > 2 and str(p.cmdline()[1]) == str(path) and p.cmdline()[2] == tunnelID and p.pid != os.getpid()):
+            sys.stdout.write("Client exist: " + tunnelID+"\n")
+            sys.stdout.flush()
+            return True
+    return False
 ###########################################################################################################
 if __name__ == '__main__':
     if(len(sys.argv) != 4):
