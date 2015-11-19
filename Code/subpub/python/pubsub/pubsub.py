@@ -47,9 +47,13 @@ class PubSub(object):
         self.channel.queue_declare(queue=queue_name, passive=passive, auto_delete=auto_delete,
                                    exclusive=exclusive, arguments=arguments)
     
-    def publish(self, routing_key, body, properties=None, mandatory=False, immediate=False):
-        self.channel.basic_publish(exchange=self.MESSAGES_EXCHANGE, routing_key=routing_key, body=body, properties=properties,
-                                   mandatory=mandatory, immediate=immediate)
+    def publish(self, routing_key, body, properties=None, mandatory=False, immediate=False, persistance=False):
+        if persistance is False:
+            self.channel.basic_publish(exchange=self.MESSAGES_EXCHANGE, routing_key=routing_key, body=body, properties=properties,
+                                       mandatory=mandatory, immediate=immediate)
+        else:
+            self.channel.basic_publish(exchange=self.MESSAGES_EXCHANGE, routing_key=routing_key, body=body, properties=pika.BasicProperties(delivery_mode=2,),
+                                       mandatory=mandatory, immediate=immediate)
 
     def subscribe(self, callback, queue_name, no_ack=False, exclusive=False, consumer_tag=None, arguments=None):
         self.channel.queue_bind(exchange=self.PRESENCE_EXCHANGE, routing_key=self.username, queue=queue_name)
@@ -60,6 +64,9 @@ class PubSub(object):
                                    arguments=arguments)
 
         self.channel.start_consuming()
+
+    def acknowledge(self, delivery_tag=None):
+        self.channel.basic_ack(delivery_tag=delivery_tag)
 
     def get_messageexchange(self):
         return self.MESSAGES_EXCHANGE

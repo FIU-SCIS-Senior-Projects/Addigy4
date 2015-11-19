@@ -6,7 +6,7 @@ function connect_to_ssh(){
    var connect_from_drop_down = document.getElementById("connect_from");
    var computer_to_connect_to = connect_from_drop_down.options[connect_from_drop_down.selectedIndex].text;
    print_to_div("Now connecting to "+computer_to_connect_to);
-   PUBSUB.send('/queue/DemoTest', {"content-type":"text/plain"}, computer_information(computer_to_connect_to, 'ssh'), 'DemoTest');
+   PUBSUB.send('/exchange/testcorp.messages', {"content-type":"text/plain"}, computer_information(computer_to_connect_to, 'ssh'), 'DemoTest');
 
    PUBSUB.subscribe("/queue/DemoTest", function(d) {
      print_to_div(d.body);
@@ -14,7 +14,7 @@ function connect_to_ssh(){
  }
 
 function print_to_div(message) {
-   document.getElementById('connecting_from_output').innerHTML += '<br>' + message;
+   console.log(message);
 }
 
 function computer_information(computer, p) {
