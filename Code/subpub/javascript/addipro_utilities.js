@@ -14,7 +14,7 @@ function connect_to_ssh(){
  }
 
 function print_to_div(message) {
-   document.getElementById('connecting_from_output').innerHTML += '<br>' + message;
+   console.log(message);
 }
 
 function computer_information(computer, p) {
