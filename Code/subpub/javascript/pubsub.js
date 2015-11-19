@@ -5,7 +5,8 @@ function PubSub(args){
   self.heartbeats_incoming = args['heartbeats_incoming'];
   self.login = args['login'];
   self.password = args['password'];
-	self.presence
+	self.presence;
+	self.organization = args['organization'];
 	init();
 
 	function init() {
@@ -15,17 +16,17 @@ function PubSub(args){
 		self.client.heartbeat.incoming = self.heartbeats_incoming;
 	}
 
-	self.send = function(queue, args, data) {
-        self.client.send("/exchange/presence/"+self.login, {"exchange":
-				"presence", "queue": self.login, "action": "bind", "key": self.login});
+	self.send = function(channel, args, data, queue_name) {
+        // self.client.send("/exchange/"+self.organization+".presence/"+self.login, {"exchange":
+				// "presence", "queue": queue_name, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
 
-	self.subscribe = function(channel, action) {
+	self.subscribe = function(channel, action, queue_name) {
 
-        self.client.subscribe("/exchange/presence/"+self.login, function(d) {
-					console.log("User " + self.login + " has entered");
-				});
+        // self.client.subscribe("/exchange/"+self.organization+".presence/"+self.login, function(d) {
+				// 	console.log("User " + self.login + " has entered");
+				// });
 		return self.client.subscribe(channel, action);
 	}
 
@@ -35,10 +36,6 @@ function PubSub(args){
 
 	self.disconnect = function(fun1) {
 		return self.client.disconnect(fun1);
-	}
-
-	self.get_messageexchange() {
-		return
 	}
 }
 

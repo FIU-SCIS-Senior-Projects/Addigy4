@@ -14,8 +14,8 @@
         <div class="output_box" id="connecting_from_output">
             <div></div>
         </div>
-        <div class="connect-options" id="connect_from">
-            <select name="connect_from">
+        <div class="connect-options">
+            <select name="connect_from"  id="connect_from">
                 <option selected> Connect from...</option>
                 <option id="1">localhost</option>
                 <option id="2">127.0.0.1</option>
@@ -26,14 +26,14 @@
             <div></div>
         </div>
 
-        <div class="connect-options" id="connect_to">
-            <select name="connect_to">
+        <div class="connect-options">
+            <select name="connect_to"  id="connect_to">
                 <option selected> Connect to...</option>
                 <option id="1">localhost</option>
                 <option id="2">127.0.0.1</option>
                 <option id="3">::1</option>
             </select>
         </div>
-        <button type="submit" onclick="connect_to_shh()">Connect via SSH</button>
+        <button type="submit" onclick="connect_to_ssh()">Connect via SSH</button>
     </body>
 </html>

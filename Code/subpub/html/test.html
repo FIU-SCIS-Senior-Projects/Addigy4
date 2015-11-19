@@ -48,10 +48,10 @@
 		});
 
 		var print_first = pipe('#first', function(data) {
-			PUBSUB.send('/exchange/messages/guest', {"content-type":"text/plain"}, data);
+			PUBSUB.send('/exchange/messages/DemoTest', {"content-type":"text/plain"}, data);
 		});
 		var on_connect = function(x) {
-			id = PUBSUB.subscribe("/exchange/messages/guest", function(d) {
+			id = PUBSUB.subscribe("/exchange/messages/DemoTest", function(d) {
 					print_first(d.body);
 				});
 			};
