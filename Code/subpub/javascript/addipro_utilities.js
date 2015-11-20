@@ -39,19 +39,21 @@ function set_connect_from(){
 
 function computer_information(computer, p) {
     var information = JSON.stringify({ 
-        "0c86c7ef-f579-4115-8137-289b8a257803": { 
-            "target": "tunneler", 
-            "tunnel_id": "fc86c7ef-f579-4115-8137-289b8a257803", 
-            "messageToClient": { 
-                "0c86c7ef-f579-4115-8137-289b8a257803": { 
-                    "target": "client", 
-                    "tunnel_id": "fc86c7ef-f579-4115-8137-289b8a257803", 
-                    "local_port": "3000", 
-                    "connection_type": "ssh" 
-                } 
-            } 
-        } 
-      });
+"0c86c7ef-f579-4115-8137-289b8a257803": { 
+"target": "tunneler", 
+"tunnel_id": "fc86c7ef-f579-4115-8137-289b8a257803", 
+"messageToClient": { 
+"0c86c7ef-f579-4115-8137-289b8a257803": { 
+"target": "client", 
+"tunnel_id": "fc86c7ef-f579-4115-8137-289b8a257803", 
+"local_port": "3000", 
+"connection_type": "ssh", 
+"tunnel_port": "22" 
+} 
+} 
+} 
+} 
+);
     return information;
 }
 
