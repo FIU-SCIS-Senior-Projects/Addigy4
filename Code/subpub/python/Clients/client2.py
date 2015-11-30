@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-import requests
 from pubsub import pubsub
 import threading
 __author__ = 'David'
 
-sample = pubsub.PubSub(addr='addigy-dev.cis.fiu.edu', queue_name='guest', username='guest', password='guest', auto_delete=True,
-                       heartbeat_interval=2)
+sample = pubsub.PubSub(addr='addigy-dev.cis.fiu.edu', queue_name='guest', username='test5', password='test5',
+                       heartbeat_interval=2, organization="testcorp", auto_delete=True)
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()
 PRESENCE_EXCHANGE = sample.get_presenceexchange()
@@ -36,7 +35,7 @@ while True:
         thread.start()
         started = True
 
-    message = input("\n")
+    message = raw_input("\n")
 
     if message == "exit":
         sample.disconnect()

@@ -30,12 +30,10 @@ class PubSub(object):
         self.channel = self.connection.channel()
 
         self.channel.exchange_declare(exchange=self.PRESENCE_EXCHANGE,
-                                      exchange_type='x-presence',
-                                      auto_delete=auto_delete)
+                                      exchange_type='x-presence')
 
         self.channel.exchange_declare(exchange=self.MESSAGES_EXCHANGE,
-                                      exchange_type='fanout',
-                                      auto_delete=auto_delete)
+                                      exchange_type='fanout')
 
         # If we send the message to a non-existant location, RabbitMQ will trash the message.
         # Here we declare a queue to which the message will get sent to in the broker
