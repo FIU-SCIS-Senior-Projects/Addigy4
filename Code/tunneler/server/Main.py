@@ -18,10 +18,6 @@ TUNNEl_CLIENT_ID_SIZE = 36
 DATA_SIZE_VALUE = 12
 PORT_SIZE_VALUE = 32
 
-# TUNNELS_DIC = {}
-# TUNNELS_ON_SELECT = []
-
-
 # List of all active sockets to receive information from
 ACTIVE_SOCKETS = []
 # dictionary key=socket, value client\tunnel object

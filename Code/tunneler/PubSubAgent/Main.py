@@ -20,10 +20,29 @@ usrnANDpassw = "test5"
 queueName = "test5_mailbox"
 routingKey = "testcorp"
 
+
 client_running = None
 tunnel_running = None
 threads_running = []
 
+###########################################################################################################
+def terminateThreads():
+    global threads_running
+    while(threads_running.__len__() != 0):
+            thread = threads_running.pop()
+            thread._stop()
+###########################################################################################################
+def setClientRunning(_running_client):
+    global client_running
+    client_running = _running_client
+###########################################################################################################
+def setTunnelRunning(_running_tunnel):
+    global tunnel_running
+    tunnel_running = _running_tunnel
+###########################################################################################################
+def addThreadsRunning(_running_Thread):
+    global threads_running
+    threads_running.append(_running_Thread)
 ###########################################################################################################
 def failedAction():
     return False
@@ -42,9 +61,7 @@ def successAction(request):
     if target == 'client':
         terminate = request['terminate']
         if(terminate == "true"):
-            while(threads_running.__len__() != 0):
-                thread = threads_running.pop()
-                thread._stop()
+            terminateThreads()
             return
         connection = request['connection_type']
         if(connection == "ssh"):
@@ -53,20 +70,21 @@ def successAction(request):
             tunnels_on_select = Thread(target=startSSH, args=[command])
             tunnels_on_select.daemon = True
             tunnels_on_select.start()
+            addThreadsRunning(tunnels_on_select)
         elif(connection == "web"):
             print("opening browser!")
             url = "http://localhost:3000"
             tunnels_on_select = Thread(target=startWEB, args=[url])
             tunnels_on_select.daemon = True
             tunnels_on_select.start()
-            threads_running.append(tunnels_on_select)
+            addThreadsRunning(tunnels_on_select)
         elif(connection == "vnc"):
             print("opening vnc!")
             port = request['local_port']
             tunnels_on_select = Thread(target=startVNC, args=[port])
             tunnels_on_select.daemon = True
             tunnels_on_select.start()
-            threads_running.append(tunnels_on_select)
+            addThreadsRunning(tunnels_on_select)
     elif target == 'tunneler':
         successResponse = request['messageToClient']
         pubSubClient.publish(routing_key=routingKey, body=bytes(json.dumps(successResponse), 'utf-8'))
@@ -116,7 +134,7 @@ def startTunneler(tunnelId, path):
         if success:
             break
     if(success):
-        tunnel_running = p
+        setTunnelRunning(p)
         return True
     else:
         return False
@@ -144,21 +162,22 @@ def startClient(targetTunnel, localPort, destPort, path):
         if success:
             break
     if(success):
-        client_running = p
+        setClientRunning(p)
         return True
     else:
         return False
 
 ###########################################################################################################
 def executeTermination(target):
+    global client_running, tunnel_running
     if(target == "client"):
         if not client_running == None:
-            print("Terminating client: " + client_running.pid())
-            client_running.kill()
+            print("Terminating client")
+            client_running.terminate()
     else:
         if not tunnel_running == None:
-            print("Terminating tunneler: " + tunnel_running.pid())
-            tunnel_running.kill()
+            print("Terminating tunneler")
+            tunnel_running.terminate()
 ###########################################################################################################
 def executeCommand(request):
     PATH = "/var/opt/"
