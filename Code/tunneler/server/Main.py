@@ -11,7 +11,7 @@ from socket import error as SocketError
 
 
 __tunnel_connection_port = 8000
-__client_connection_port = 7000
+__client_connection_port = 8500
 __HOST = '0.0.0.0'
 
 TUNNEl_CLIENT_ID_SIZE = 36
@@ -83,6 +83,7 @@ def initClientConnections(__HOST, __client_connection_port):
                 ACTIVE_SOCKETS.append(newClient.getConnection())
                 SOCKETS_DICT[newClient.getConnection()] = newClient
             else:
+                client_connection.shutdown()
                 client_connection.close()
         except KeyboardInterrupt:
             print("\nServer disconnecting!\nClosing connections...")
@@ -173,9 +174,9 @@ def readData(socket, dataSize):
 if __name__ == '__main__':
     # print('SERVER STARTING!!!')
     # listen to tunnels incoming DATA
-    tunnels_on_select = Thread(target=initClientConnections, args=[__HOST, __client_connection_port])
-    tunnels_on_select.daemon = True
-    tunnels_on_select.start()
+    clientThread = Thread(target=initClientConnections, args=[__HOST, __client_connection_port])
+    clientThread.daemon = True
+    clientThread.start()
     # starting socket to listen for incoming connections from tunnels
     tunnelThread = Thread(target=initTunnelConnections, args=[__HOST, __tunnel_connection_port])
     tunnelThread.daemon = True

@@ -16,9 +16,14 @@ PubSubId = "0c86c7ef-f579-4115-8137-289b8a257803"
 connected = True
 message = ""
 
-usrnANDpassw = "test4"
-queueName = "test4_mailbox"
+usrnANDpassw = "test5"
+queueName = "test5_mailbox"
 routingKey = "testcorp"
+
+client_running = None
+tunnel_running = None
+threads_running = []
+
 ###########################################################################################################
 def failedAction():
     return False
@@ -35,6 +40,12 @@ def startVNC(port):
 def successAction(request):
     target = request['target']
     if target == 'client':
+        terminate = request['terminate']
+        if(terminate == "true"):
+            while(threads_running.__len__() != 0):
+                thread = threads_running.pop()
+                thread._stop()
+            return
         connection = request['connection_type']
         if(connection == "ssh"):
             print("opening terminal!")
@@ -48,12 +59,14 @@ def successAction(request):
             tunnels_on_select = Thread(target=startWEB, args=[url])
             tunnels_on_select.daemon = True
             tunnels_on_select.start()
+            threads_running.append(tunnels_on_select)
         elif(connection == "vnc"):
             print("opening vnc!")
             port = request['local_port']
             tunnels_on_select = Thread(target=startVNC, args=[port])
             tunnels_on_select.daemon = True
             tunnels_on_select.start()
+            threads_running.append(tunnels_on_select)
     elif target == 'tunneler':
         successResponse = request['messageToClient']
         pubSubClient.publish(routing_key=routingKey, body=bytes(json.dumps(successResponse), 'utf-8'))
@@ -71,7 +84,6 @@ def receiveMessages(channel, method_frame, header_frame, body):
                 print("failed")
     except ValueError as e:
         # Sring is not a valid json format text
-        # do nothin
         sys.stderr.write("Message not a valid Json: " + body.decode("utf-8")+"\n")
 
 ###########################################################################################################
@@ -104,6 +116,7 @@ def startTunneler(tunnelId, path):
         if success:
             break
     if(success):
+        tunnel_running = p
         return True
     else:
         return False
@@ -131,21 +144,40 @@ def startClient(targetTunnel, localPort, destPort, path):
         if success:
             break
     if(success):
+        client_running = p
         return True
     else:
         return False
 
+###########################################################################################################
+def executeTermination(target):
+    if(target == "client"):
+        if not client_running == None:
+            print("Terminating client: " + client_running.pid())
+            client_running.kill()
+    else:
+        if not tunnel_running == None:
+            print("Terminating tunneler: " + tunnel_running.pid())
+            tunnel_running.kill()
 ###########################################################################################################
 def executeCommand(request):
     PATH = "/var/opt/"
     target = request['target']
     try:
         if target == 'client':
+            terminate = request['terminate']
+            if(terminate == "true"):
+                executeTermination("client")
+                return True
             targetTunnel = request['tunnel_id']
             local_port = int(request['local_port'])
             tunnelport = request['tunnel_port']
             return startClient(targetTunnel, local_port, tunnelport, PATH+"client/Main.py")
         elif target == 'tunneler':
+            terminate = request['terminate']
+            if(terminate == "true"):
+                executeTermination("tunneler")
+                return True
             tunnelId = request['tunnel_id']
             return startTunneler(tunnelId, PATH+"tunneler/Main.py")
     except FileNotFoundError as error:

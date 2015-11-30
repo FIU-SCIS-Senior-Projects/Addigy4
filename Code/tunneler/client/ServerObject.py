@@ -14,7 +14,7 @@ class Server():
 
 
     def __init__(self):
-        self.__serverPort = 7000
+        self.__serverPort = 8500
         self.__url = 'addigy-dev.cis.fiu.edu'
 
     def connect(self):
