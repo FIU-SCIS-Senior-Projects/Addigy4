@@ -19,11 +19,27 @@ function connect_to(protocol, port){
         }, "DemoTest");
     PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
                 computer_information(protocol, port, false), 'DemoTest');
+    $("#connect-ssh-button").attr("disabled", "disabled");
+    $("#connect-vnc-button").attr("disabled", "disabled");
+    $("#connect-web-button").attr("disabled", "disabled");
+    $("#connect-ssh-button").hide();
+    $("#connect-vnc-button").hide();
+    $("#connect-web-button").hide();
+    $("#disconnect").removeAttr("disabled");
+    $("#disconnect").show();
  }
 
 function disconnect() {
   PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
               computer_information(connected_using, using_port, true), 'DemoTest');
+    $("#disconnect").hide();
+    $("#disconnect").attr("disabled", "disabled");
+    $("#connect-ssh-button").show();
+    $("#connect-vnc-button").show();
+    $("#connect-web-button").show();
+    $("#connect-ssh-button").attr("disabled", "disabled");
+    $("#connect-vnc-button").attr("disabled", "disabled");
+    $("#connect-web-button").attr("disabled", "disabled");
 }
 
 function print_to_div(message) {
@@ -81,6 +97,8 @@ $(document).ready(function() {
 
 
     PUBSUB.connect('/');
+    $("#disconnect").hide();
+    $("#disconnect").attr("disabled", "disabled");
     $("#connect-ssh-button").attr("disabled", "disabled");
     $("#connect-vnc-button").attr("disabled", "disabled");
     $("#connect-web-button").attr("disabled", "disabled");
