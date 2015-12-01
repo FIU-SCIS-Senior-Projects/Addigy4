@@ -40,6 +40,12 @@ function disconnect() {
     $("#connect-ssh-button").attr("disabled", "disabled");
     $("#connect-vnc-button").attr("disabled", "disabled");
     $("#connect-web-button").attr("disabled", "disabled");
+    document.getElementById("mach1").value = "";
+    document.getElementById("mach2").value = "";
+    document.getElementById("connect-to-display").innerHTML = "Not Connected";
+    document.getElementById("connect-from-display").innerHTML = "Not Connected";
+
+
 }
 
 function print_to_div(message) {
