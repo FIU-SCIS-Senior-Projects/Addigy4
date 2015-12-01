@@ -70,7 +70,10 @@
                             <a href="#"><i class="fa fa-desktop fa-fw"></i> Connect To<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick="set_connect_to()" id="connect-to-1">Machine 1</a>
+                                    <a href="#" onclick='set_connect_to(document.getElementById("connect-to-1").innerHTML, "0c86c7ef-f579-4115-8137-289b8a257803")' id="connect-to-1">Machine 1</a>
+                                </li>
+                                <li>
+                                    <a href="#" onclick='set_connect_to(document.getElementById("connect-to-2").innerHTML, "1c86c7ef-f579-4115-8137-289b8a257803")' id="connect-to-2">Machine 2</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -79,7 +82,10 @@
                             <a href="#"><i class="fa fa-desktop fa-fw"></i> Connect From<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" onclick="set_connect_from()" id="connect-from-1">Machine 1</a>
+                                    <a href="#" onclick='set_connect_from(document.getElementById("connect-from-1").innerHTML, "0c86c7ef-f579-4115-8137-289b8a257803")' id="connect-from-1">Machine 1</a>
+                                </li>
+                                <li>
+                                    <a href="#" onclick='set_connect_from(document.getElementById("connect-from-2").innerHTML, "1c86c7ef-f579-4115-8137-289b8a257803")' id="connect-from-2">Machine 2</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -151,8 +157,17 @@
             </div>
             </div>
             <div class=row>
-                <div class="col-lg-3">
-                    <button type="button" class="btn btn-success" id="connect-ssh-button" onclick="connect_to_ssh()">Connect SSH</button>
+                <div class="col-lg-1">
+                    <button type="button" class="btn btn-success" id="connect-ssh-button" onclick='connect_to("ssh", "22")'>Connect SSH</button>
+                </div>
+                <div class="col-lg-1">
+                    <button type="button" class="btn btn-success" id="connect-vnc-button" onclick='connect_to("vnc", "4500")'>Connect VNC</button>
+                </div>
+                <div class="col-lg-1">
+                    <button type="button" class="btn btn-success" id="connect-web-button" onclick='connect_to("web", "9000")'>Connect Web</button>
+                </div>
+                <div class="col-lg-1">
+                    <button type="button" class="btn btn-warning" id="disconnect" onclick='disconnect()'>Disconnect</button>
                 </div>
                 <input id="mach1" type="hidden" value="">
                 <input id="mach2" type="hidden" value="">
