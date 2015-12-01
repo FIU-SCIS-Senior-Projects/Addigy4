@@ -18,7 +18,7 @@ function connect_to(protocol, port){
             console.log();
         }, "DemoTest");
     PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
-                computer_information(protocol, port, false), 'DemoTest');
+                computer_information(protocol, port, "false"), 'DemoTest');
     $("#connect-ssh-button").attr("disabled", "disabled");
     $("#connect-vnc-button").attr("disabled", "disabled");
     $("#connect-web-button").attr("disabled", "disabled");
@@ -31,7 +31,7 @@ function connect_to(protocol, port){
 
 function disconnect() {
   PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
-              computer_information(connected_using, using_port, true), 'DemoTest');
+              computer_information(connected_using, using_port, "true"), 'DemoTest');
     $("#disconnect").hide();
     $("#disconnect").attr("disabled", "disabled");
     $("#connect-ssh-button").show();
@@ -70,7 +70,7 @@ function computer_information(protocol, port, disconnect_flag) {
     var message_to_client = {};
     var client_info = {};
     var pubsubId;
-    client_info["diconnect"] = disconnect_flag;
+    client_info["disconnect"] = disconnect_flag;
     client_info["tunnel_port"] = port;
     client_info["connection_type"] = protocol;
     client_info["local_port"] = "3000";
@@ -81,7 +81,7 @@ function computer_information(protocol, port, disconnect_flag) {
 
     var tunnel_info = {};
     tunnel_info["target"] = "tunneler";
-    tunnel_info["diconnect"] = disconnect_flag;
+    tunnel_info["disconnect"] = disconnect_flag;
     tunnel_info["tunnel_id"] = "fc86c7ef-f579-4115-8137-289b8a257803";
     tunnel_info["messageToClient"] = message_to_client;
     var tunnelJson = {};
