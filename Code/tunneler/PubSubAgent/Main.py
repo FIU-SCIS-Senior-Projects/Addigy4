@@ -59,7 +59,7 @@ def startVNC(port):
 def successAction(request):
     target = request['target']
     if target == 'client':
-        terminate = request['terminate']
+        terminate = request['disconnect']
         if(terminate == "true"):
             terminateThreads()
             return
@@ -184,7 +184,7 @@ def executeCommand(request):
     target = request['target']
     try:
         if target == 'client':
-            terminate = request['terminate']
+            terminate = request['disconnect']
             if(terminate == "true"):
                 executeTermination("client")
                 return True
@@ -193,7 +193,7 @@ def executeCommand(request):
             tunnelport = request['tunnel_port']
             return startClient(targetTunnel, local_port, tunnelport, PATH+"client/Main.py")
         elif target == 'tunneler':
-            terminate = request['terminate']
+            terminate = request['disconnect']
             if(terminate == "true"):
                 executeTermination("tunneler")
                 return True
