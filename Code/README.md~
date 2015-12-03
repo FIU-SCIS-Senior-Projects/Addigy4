@@ -6,10 +6,6 @@
 		- Client: which is going to be used in machines that are going to initialize connections
 		- Tunneler: Which is going to be installed on machines where the user wants to connect to
 		- Server: which is going to be running on the server redirecting each data message received to intended recipient
-		
-
-		(Demo purpose)
-		- Pubsub Agent: Created as an example for demo presentation representing one scenario in which Tunneler software can be used and combined with "Pubsub" project
 
 ## PubSub:
     - Any client implementing this class will be able to communicated with a RabbitMQ AMQP broker

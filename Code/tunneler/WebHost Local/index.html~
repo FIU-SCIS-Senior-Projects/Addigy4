@@ -1,10 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Test Localhost</title>
-</head>
-<body>
-<h1>Test localhost server listening:9000</h1>
-</body>
+    <head>
+        <title>FIU 2015 showcase</title>
+        <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        body {
+            display: table;
+        }
+
+        .my-block {
+            text-align: center;
+            display: table-cell;
+            vertical-align: middle;
+        }
+        </style>
+    </head>
+    <body>
+    <div class="my-block">
+       <h1>WELCOME</h1>
+<pre>
+0000000    0000####000########000<br />
+0000000    0000####000########000<br />
+00                 000########000<br />
+00000######0000####000########000<br />
+00000######0000####000########000<br />
+00#########0000####000########000<br />
+00#########0000####00000000000000<br />
+00#########0000####00000000000000<br />
+</pre>
+    </div>
+    </body>
 </html>

@@ -4,9 +4,13 @@
 		- Client: which is going to be used in machines that are going to initialize connections
 		- Tunneler: Which is going to be installed on machines where the user wants to connect to
 		- Server: which is going to be running on the server redirecting each data message received to intended recipient
+		- Webhost Local is a simple web server for testing purposes of accessing a tunnel with a running server for web access.
+
+		(Demo purpose)
+		- Pubsub Agent: is going to be install in every machine as an intermidiate program which will start and terminate each service
 
 ##Installation:
-	1) Server needs to be uploaded to a web services such as AWS and ports 7000 and 8000 has to be opened.
+	1) Server needs to be uploaded to a web services such as AWS and ports 8500 and 8000 has to be opened.
 	2) Client needs to be downloaded into the machine which will initialize connection. 
 	3) Tunneler needs to be downloaded into the end point machine (machine the user is going to connect to).
 	4) Client and Tunnel boths will have to be updated:
@@ -21,3 +25,16 @@
 	4) Open intended service (Web, ssh, vnc), connect to Client using:
 		- address: "localhost"
 		- local port: "local port given on step 3"
+
+##Demo presentation
+	1) Server must be running
+	2) Start pubsub agent on two machines and connect as a valid user.(Different account for each machine)
+		- Before running pubsub aget:
+			- Open on PyCharm or any other python IDE
+			- Locate top variable "PubSubId"
+			- On one machine this id mut start with '0' and on the oher with '1'
+			- Locate variable "usrnANDpassw"
+			- On one machine should be "test4" and on the other "test5"
+			- Locate variable "queueName"
+			- On one machine should be "test4_mailbox" and on the other "test5_mailbox"
+	
