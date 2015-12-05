@@ -79,7 +79,6 @@ def initClientConnections(__HOST, __client_connection_port):
                 ACTIVE_SOCKETS.append(newClient.getConnection())
                 SOCKETS_DICT[newClient.getConnection()] = newClient
             else:
-                client_connection.shutdown()
                 client_connection.close()
         except KeyboardInterrupt:
             print("\nServer disconnecting!\nClosing connections...")
