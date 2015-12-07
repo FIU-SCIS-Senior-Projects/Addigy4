@@ -5,8 +5,7 @@ import socket
 class Server():
     __serverPort = 0
     # addigy-dev.cis.fiu.edu        fiu server
-    # fiu.addigy.com                jason server
-    __url = "fiu.addigy.com"
+    __url = ""
     __socket = None
 
     def __init__(self):

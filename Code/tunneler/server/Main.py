@@ -64,6 +64,8 @@ def getClient(client_connection, client_address):
         return None
 ##################################################################################################
 def initClientConnections(__HOST, __client_connection_port):
+    global clientOut
+    print >> clientOut, "Listening to client connections"
     listen_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_client_socket.bind((__HOST, __client_connection_port))
@@ -72,16 +74,18 @@ def initClientConnections(__HOST, __client_connection_port):
     while True:
         try:
             client_connection, client_address = listen_client_socket.accept()
-            # print("\nNew Client Connection!: " + client_address)
+            print >> clientOut, "\nNew Client Connection!: " + str(client_address)
             newClient = getClient(client_connection, client_address)
             if(newClient != None):
                 SOCKETS_ID_DICT[newClient.getId()] = newClient
                 ACTIVE_SOCKETS.append(newClient.getConnection())
                 SOCKETS_DICT[newClient.getConnection()] = newClient
             else:
+                print >> clientOut, "\nClient Connection closed: " + str(client_connection) + "\n"
                 client_connection.close()
         except KeyboardInterrupt:
-            print("\nServer disconnecting!\nClosing connections...")
+            print >> clientOut, "\nServer disconnecting!\nClosing connections..."
+            clientOut.close()
             os._exit(0)
 ##################################################################################################
 def initTunnelConnections(__HOST, __tunnel_connection_port):
@@ -93,11 +97,11 @@ def initTunnelConnections(__HOST, __tunnel_connection_port):
     while True:
         try:
             tunnel_connection, tunnel_address = listen_tunnel_socket.accept()
-            print("\nNew Client Connection!: " + str(tunnel_address) + "--" +str(tunnel_connection._sock))
+            # print("\nNew Client Connection!: " + str(tunnel_address) + "--" +str(tunnel_connection._sock))
         except KeyboardInterrupt:
             message = "\nServer disconnecting!\nClosing connections..."
             errConnectionHandler(listen_tunnel_socket, message)
-            sys.exit(0)
+            os._exit(0)
         try:
             # receiving tunnel uuid
             tunnel_id = readData(tunnel_connection, TUNNEl_CLIENT_ID_SIZE)
@@ -169,6 +173,8 @@ def readData(socket, dataSize):
 if __name__ == '__main__':
     # print('SERVER STARTING!!!')
     # listen to tunnels incoming DATA
+    global clientOut
+    clientOut = open('clientOut.txt', 'w')
     clientThread = Thread(target=initClientConnections, args=[__HOST, __client_connection_port])
     clientThread.daemon = True
     clientThread.start()
