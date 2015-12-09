@@ -174,7 +174,7 @@ if __name__ == '__main__':
     # print('SERVER STARTING!!!')
     # listen to tunnels incoming DATA
     global clientOut
-    clientOut = open('clientOut.txt', 'w')
+    clientOut = open('var/opt/server/clientOut.txt', 'w')
     clientThread = Thread(target=initClientConnections, args=[__HOST, __client_connection_port])
     clientThread.daemon = True
     clientThread.start()
