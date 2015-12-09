@@ -119,7 +119,7 @@ def setupClient(params):
     tunnelID = params[1]
     localPort = int(params[2])
     destPort = int(params[3])
-    if(not clientExist(tunnelID)):
+    if(not clientExist(tunnelID, localPort, destPort)):
         # print('\n====================================================\n'
         #         'param1: '+tunnelID+
         #         '\nparam2: '+str(localPort)+
@@ -145,13 +145,18 @@ def readData(socket, dataSize):
         dataSize -= len(newbuf)
     return buf
 #####################################################################################################
-def clientExist(tunnelID):
+def clientExist(tunnelID, localPort, destPort):
     path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/Main.py"
     for p in psutil.process_iter():
-        if(len(p.cmdline()) > 2 and str(p.cmdline()[1]) == str(path) and p.cmdline()[2] == tunnelID and p.pid != os.getpid()):
-            sys.stdout.write("Client exist: " + tunnelID+"\n")
-            sys.stdout.flush()
-            return True
+        if(len(p.cmdline()) > 3):
+            if(str(p.cmdline()[3]) == str(localPort) and p.pid != os.getpid()):
+                sys.stdout.write("Port is already in use: " + str(localPort)+"\n")
+                sys.stdout.flush()
+                return True
+            if(str(p.cmdline()[1]) == str(path) and p.cmdline()[2] == tunnelID and str(p.cmdline()[4]) == str(destPort) and p.pid != os.getpid()):
+                sys.stdout.write("      Client exist!! \n       *  Connected to tunnel: " + tunnelID+"\n       *  Tunnel port: " + str(destPort) + "\n")
+                sys.stdout.flush()
+                return True
     return False
 ###########################################################################################################
 if __name__ == '__main__':
