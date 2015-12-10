@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from pubsub import pubsub
+import pubsub
 import threading
 
 __author__ = 'David'
 
-sample = pubsub.PubSub(addr='localhost', queue_name='david', username='david', password='guest', auto_delete=True,
+sample = pubsub.PubSub(addr='addigy-dev.cis.fiu.edu', queue_name='david', username='david', password='guest', auto_delete=True,
                        heartbeat_interval=60)
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()

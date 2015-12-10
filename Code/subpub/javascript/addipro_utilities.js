@@ -17,7 +17,7 @@ function connect_to(protocol, port){
     PUBSUB.subscribe("/exchange/testcorp.messages", function(d) {
             console.log();
         }, "DemoTest");
-    PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
+    PUBSUB.publish('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
                 computer_information(protocol, port, "false"), 'DemoTest');
     $("#connect-ssh-button").attr("disabled", "disabled");
     $("#connect-vnc-button").attr("disabled", "disabled");
@@ -30,7 +30,7 @@ function connect_to(protocol, port){
  }
 
 function disconnect() {
-  PUBSUB.send('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
+  PUBSUB.publish('/exchange/testcorp.messages/test1', {"content-type":"text/plain"},
               computer_information(connected_using, using_port, "true"), 'DemoTest');
     $("#disconnect").hide();
     $("#disconnect").attr("disabled", "disabled");
@@ -93,8 +93,8 @@ function computer_information(protocol, port, disconnect_flag) {
 
 $(document).ready(function() {
     PUBSUB = new PubSub({
-            location: 'http://addigy-dev.cis.fiu.edu:15674/stomp',
-            login: 'test1',
+            addr: 'http://addigy-dev.cis.fiu.edu:15674/stomp',
+            username: 'test1',
             password: 'test1',
             heartbeats_outcoming: 0,
             heartbeats_incoming: 0,

@@ -1,10 +1,10 @@
 function PubSub(args){
 	var self = this;
-	self.location = args['location'];
+	self.location = args['addr'];
 	self.heartbeats_outcoming = args['heartbeats_outcoming'];
-  self.heartbeats_incoming = args['heartbeats_incoming'];
-  self.login = args['login'];
-  self.password = args['password'];
+    self.heartbeats_incoming = args['heartbeats_incoming'];
+    self.login = args['username'];
+    self.password = args['password'];
 	self.presence;
 	self.organization = args['organization'];
 	init();
@@ -16,21 +16,13 @@ function PubSub(args){
 		self.client.heartbeat.incoming = self.heartbeats_incoming;
 	}
 
-	self.send = function(channel, args, data, queue_name) {
+	self.publish = function(channel, args, data, queue_name) {
         self.client.send("/exchange/"+self.organization+".presence/"+self.login, {"exchange":
 				"presence", "queue": queue_name, "action": "bind", "key": self.login});
 		return self.client.send(channel, args, data);
 	}
 
 	self.subscribe = function(channel, action, queue_name) {
-
-//         self.client.subscribe("/exchange/"+self.organization+".presence/"+"", function(d) {
-//				 	self.user_logged = d.headers.key;
-//				 });
-//                self.client.subscribe("/exchange/"+self.organization+".presence/"+self.login, function(d) {
-//				 	self.user_logged = d.headers.key;
-//                    self.user_action = d.headers.action;
-//				 });
 		return self.client.subscribe(channel, action);
 	}
 
