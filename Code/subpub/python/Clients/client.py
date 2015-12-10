@@ -5,7 +5,11 @@ import threading
 __author__ = 'David'
 
 sample = pubsub.PubSub(addr='addigy-dev.cis.fiu.edu', queue_name='david', username='david', password='guest', auto_delete=True,
+<<<<<<< Updated upstream
                        heartbeat_interval=60)
+=======
+                       heartbeat_interval=60, organization='testcorp')
+>>>>>>> Stashed changes
 
 MESSAGES_EXCHANGE = sample.get_messageexchange()
 PRESENCE_EXCHANGE = sample.get_presenceexchange()

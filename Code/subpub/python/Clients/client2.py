@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pubsub import pubsub
+import pubsub
 import threading
 __author__ = 'David'
 
