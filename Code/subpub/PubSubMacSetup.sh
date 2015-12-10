@@ -12,7 +12,7 @@ fi
 {
 easy_install pip
 pip install pika
-./rabbitmq-plugins enable rabbitmq_management
-./rabbitmq-plugins enable rabbitmq_web_stomp
-./rabbitmq-plugins enable rabbit_presence_exchange
+./rabbitmq-plugins.sh enable rabbitmq_management
+./rabbitmq-plugins.sh enable rabbitmq_web_stomp
+./rabbitmq-plugins.sh enable rabbit_presence_exchange
 } &> /dev/null
